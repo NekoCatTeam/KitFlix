@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KitFlix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0f1b2d;--panel:#18283f;--line:#2a3d5a;--paper:#f3ede2;--mute:#9fb0c7;--amber:#ffb54a;--velvet:#a8283a;--r:10px}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--ink);color:var(--paper);font:400 16px/1.5 "Bricolage Grotesque",system-ui,sans-serif;padding-top:env(safe-area-inset-top,0)}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.logo{font-weight:800;font-size:1.6rem;letter-spacing:-.04em;color:var(--velvet);background:var(--paper);padding:.05em .4em;border-radius:6px;display:inline-block;transform:rotate(-2deg)}
+.btn{border:0;border-radius:var(--r);padding:.6rem 1.1rem;font-weight:600;background:var(--amber);color:#1b1305}
+.btn.ghost{background:transparent;color:var(--paper);border:1px solid var(--line)}
+.btn.danger{background:var(--velvet);color:#fff}
+.btn:hover{filter:brightness(1.1)}
+input,textarea{width:100%;background:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:.65rem .8rem}
+label{display:block;font-size:.9rem;color:var(--mute);margin:.9rem 0 .3rem}
+.hidden{display:none!important}
+.err{color:#ff8a98;min-height:1.4em;font-size:.9rem;margin:.6rem 0 0}
+
+/* auth */
+#auth{min-height:100vh;display:grid;place-items:center;padding:1.5rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:2rem;width:100%;max-width:400px}
+.card h1{margin:.8rem 0 .2rem;font-size:1.5rem;letter-spacing:-.02em}
+.card p.sub{margin:0 0 1rem;color:var(--mute)}
+.card .btn{width:100%;margin-top:1rem}
+.or{display:flex;align-items:center;gap:.8rem;color:var(--mute);margin:1.2rem 0 .2rem;font-size:.85rem}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;margin-top:.8rem;background:#fff;color:#222;border:0;border-radius:var(--r);padding:.6rem;font-weight:600}
+.switch{text-align:center;margin-top:1.2rem;color:var(--mute);font-size:.92rem}
+.switch button{background:none;border:0;color:var(--amber);text-decoration:underline;padding:0}
+
+/* app */
+header{display:flex;align-items:center;gap:1rem;padding:.9rem clamp(1rem,4vw,2.5rem);border-bottom:1px solid var(--line);flex-wrap:wrap;position:sticky;top:0;background:var(--ink);z-index:5}
+header .grow{flex:1}
+header input{max-width:260px}
+.who{color:var(--mute);font-size:.9rem}
+main{padding:2rem clamp(1rem,4vw,2.5rem) 4rem}
+main h2{margin:0 0 1.2rem;font-size:1.3rem;letter-spacing:-.02em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.4rem}
+.movie{background:none;border:0;padding:0;text-align:left}
+.poster{aspect-ratio:2/3;border-radius:var(--r);overflow:hidden;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;transition:transform .15s,border-color .15s}
+.movie:hover .poster{transform:translateY(-4px);border-color:var(--amber)}
+.poster img{width:100%;height:100%;object-fit:cover}
+.movie b{display:block;margin-top:.55rem}
+.movie span{color:var(--mute);font-size:.88rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.empty{border:1px dashed var(--line);border-radius:16px;padding:3rem 1.5rem;text-align:center;color:var(--mute)}
+.empty .btn{margin-top:1rem}
+
+/* modals */
+.modal{position:fixed;inset:0;background:rgba(5,10,20,.8);display:grid;place-items:center;padding:1rem;z-index:20;overflow:auto}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.5rem;width:100%;max-width:520px}
+.sheet.wide{max-width:960px}
+.sheet h3{margin:0 0 .5rem}
+.row{display:flex;gap:.7rem;justify-content:flex-end;margin-top:1.2rem}
+.thumbprev{width:90px;aspect-ratio:2/3;object-fit:cover;border-radius:8px;border:1px solid var(--line);margin-top:.5rem}
+video{width:100%;max-height:70vh;background:#000;border-radius:var(--r)}
+.desc{color:var(--mute);margin:.8rem 0 0;white-space:pre-wrap}
+.note{font-size:.82rem;color:var(--mute);margin:.5rem 0 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===== AUTH ===== -->
+<section id="auth" class="hidden">
+  <div class="card">
+    <span class="logo">KitFlix</span>
+    <h1 id="authTitle">Sign in</h1>
+    <p class="sub">Your library, on this device.</p>
+    <div id="nameWrap" class="hidden"><label for="aName">Display name</label><input id="aName" autocomplete="nickname"></div>
+    <label for="aEmail">Email</label><input id="aEmail" type="email" autocomplete="email">
+    <label for="aPass">Password</label><input id="aPass" type="password" autocomplete="current-password">
+    <p class="err" id="authErr" role="alert"></p>
+    <button class="btn" id="authGo">Sign in</button>
+    <div class="or">or</div>
+    <div id="gSlot"></div>
+    <button class="gbtn" id="gFallback" type="button">
+      <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7A14.500 14.500 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.800l-7.5-5.800c-2.100 1.400-4.800 2.300-8.400 2.300-6.300 0-11.600-4.100-13.500-9.800l-7.900 6.100C6.500 42.600 14.600 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+    <p class="switch"><span id="swText">New here?</span> <button id="swBtn" type="button">Create an account</button></p>
+  </div>
+</section>
+
+<!-- ===== APP ===== -->
+<section id="app" class="hidden">
+  <header>
+    <span class="logo">KitFlix</span>
+    <input id="search" type="search" placeholder="Search your library" aria-label="Search your library">
+    <span class="grow"></span>
+    <span class="who" id="who"></span>
+    <button class="btn" id="addBtn">Add movie</button>
+    <button class="btn ghost" id="outBtn">Sign out</button>
+  </header>
+  <main>
+    <h2 id="libTitle">My library</h2>
+    <div id="grid" class="grid"></div>
+  </main>
+</section>
+
+<!-- Add movie -->
+<div id="addModal" class="modal hidden"><div class="sheet">
+  <h3>Add a movie</h3>
+  <label for="fVideo">Movie file</label><input id="fVideo" type="file" accept="video/*">
+  <label for="fTitle">Title</label><input id="fTitle">
+  <label for="fDesc">Description</label><textarea id="fDesc" rows="3"></textarea>
+  <label for="fThumb">Thumbnail image</label><input id="fThumb" type="file" accept="image/*">
+  <img id="thumbPrev" class="thumbprev hidden" alt="Thumbnail preview">
+  <p class="note">No image? KitFlix grabs a frame from the movie.</p>
+  <p class="err" id="addErr" role="alert"></p>
+  <div class="row"><button class="btn ghost" id="addCancel">Cancel</button><button class="btn" id="addSave">Save to library</button></div>
+</div></div>
+
+<!-- Player -->
+<div id="playModal" class="modal hidden"><div class="sheet wide">
+  <video id="player" controls></video>
+  <h3 id="pTitle" style="margin-top:1rem"></h3>
+  <p class="desc" id="pDesc"></p>
+  <div class="row"><button class="btn danger" id="pDel">Remove from library</button><button class="btn ghost" id="pClose">Close</button></div>
+</div></div>
+
+<script>
+/* ---- Google sign-in: paste your OAuth Web Client ID here (see notes) ---- */
+const GOOGLE_CLIENT_ID = "";
+
+const $ = id => document.getElementById(id);
+let db, user = null, movies = [], mode = "in", currentMovie = null, playUrl = null;
+const urls = [];
+
+/* ---------- IndexedDB ---------- */
+function openDB(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open("kitflix", 1);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      d.createObjectStore("users", {keyPath: "email"});
+      d.createObjectStore("movies", {keyPath: "id"}).createIndex("owner", "owner");
+    };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+const tx = (store, m, fn) => new Promise((res, rej) => {
+  const t = db.transaction(store, m); const q = fn(t.objectStore(store));
+  t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error);
+});
+const getUser = e => tx("users", "readonly", s => s.get(e));
+const putUser = u => tx("users", "readwrite", s => s.put(u));
+const getMovies = o => tx("movies", "readonly", s => s.index("owner").getAll(o));
+const putMovie = m => tx("movies", "readwrite", s => s.put(m));
+const delMovie = id => tx("movies", "readwrite", s => s.delete(id));
+
+/* ---------- Password hashing ---------- */
+const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+async function hash(pw, salt){
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
+  return hex(await crypto.subtle.deriveBits({name: "PBKDF2", salt: new TextEncoder().encode(salt), iterations: 150000, hash: "SHA-256"}, key, 256));
+}
+
+/* ---------- Auth ---------- */
+function setMode(m){
+  mode = m;
+  $("authTitle").textContent = m === "in" ? "Sign in" : "Create your account";
+  $("authGo").textContent = m === "in" ? "Sign in" : "Create account";
+  $("nameWrap").classList.toggle("hidden", m === "in");
+  $("swText").textContent = m === "in" ? "New here?" : "Already have an account?";
+  $("swBtn").textContent = m === "in" ? "Create an account" : "Sign in";
+  $("aPass").autocomplete = m === "in" ? "current-password" : "new-password";
+  $("authErr").textContent = "";
+}
+$("swBtn").onclick = () => setMode(mode === "in" ? "up" : "in");
+
+$("authGo").onclick = async () => {
+  const email = $("aEmail").value.trim().toLowerCase(), pw = $("aPass").value, err = $("authErr");
+  err.textContent = "";
+  if(!/^\S+@\S+\.\S+$/.test(email)) return err.textContent = "Enter a valid email address.";
+  if(pw.length < 6) return err.textContent = "Use a password with at least 6 characters.";
+  const existing = await getUser(email);
+  if(mode === "up"){
+    if(existing) return err.textContent = "That email already has an account. Sign in instead.";
+    const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
+    const u = {email, name: $("aName").value.trim() || email.split("@")[0], salt, hash: await hash(pw, salt), provider: "password"};
+    await putUser(u); login(u);
+  } else {
+    if(!existing || !existing.hash) return err.textContent = existing ? "This account uses Google. Use Continue with Google." : "No account found for that email.";
+    if(await hash(pw, existing.salt) !== existing.hash) return err.textContent = "Wrong password. Try again.";
+    login(existing);
+  }
+};
+[$("aEmail"), $("aPass"), $("aName")].forEach(i => i.addEventListener("keydown", e => e.key === "Enter" && $("authGo").click()));
+
+function login(u){
+  user = u; localStorage.setItem("kitflix_session", u.email);
+  $("aPass").value = ""; showApp();
+}
+$("outBtn").onclick = () => {
+  localStorage.removeItem("kitflix_session"); user = null;
+  urls.forEach(URL.revokeObjectURL); urls.length = 0;
+  $("app").classList.add("hidden"); $("auth").classList.remove("hidden");
+};
+
+/* Google */
+function b64json(s){ return JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g, "+").replace(/_/g, "/"))))); }
+async function onGoogle(resp){
+  try{
+    const p = b64json(resp.credential.split(".")[1]);
+    const email = p.email.toLowerCase();
+    let u = await getUser(email);
+    if(!u){ u = {email, name: p.name || email.split("@")[0], picture: p.picture, provider: "google"}; await putUser(u); }
+    login(u);
+  }catch(e){ $("authErr").textContent = "Google sign-in failed. Try again."; }
+}
+function initGoogle(){
+  if(!GOOGLE_CLIENT_ID) return;
+  const s = document.createElement("script");
+  s.src = "https://accounts.google.com/gsi/client"; s.async = true;
+  s.onload = () => {
+    google.accounts.id.initialize({client_id: GOOGLE_CLIENT_ID, callback: onGoogle});
+    google.accounts.id.renderButton($("gSlot"), {theme: "outline", size: "large", text: "continue_with", width: 336});
+    $("gFallback").classList.add("hidden");
+  };
+  document.head.appendChild(s);
+}
+$("gFallback").onclick = () => {
+  $("authErr").textContent = location.protocol === "file:"
+    ? "Google sign-in needs the site to be served over http(s), not opened as a file."
+    : "Google sign-in isn't set up yet. Add your Client ID to GOOGLE_CLIENT_ID in the file.";
+};
+
+/* ---------- Library ---------- */
+async function showApp(){
+  $("auth").classList.add("hidden"); $("app").classList.remove("hidden");
+  $("who").textContent = user.name;
+  $("libTitle").textContent = user.name + "’s library";
+  movies = (await getMovies(user.email)).sort((a, b) => b.added - a.added);
+  render();
+}
+function render(){
+  const q = $("search").value.trim().toLowerCase(), g = $("grid");
+  const list = movies.filter(m => !q || m.title.toLowerCase().includes(q) || (m.desc || "").toLowerCase().includes(q));
+  g.innerHTML = "";
+  if(!movies.length){
+    g.className = ""; g.innerHTML = '<div class="empty"><p>Your library is empty. Add a movie from your computer to start watching.</p></div>';
+    const b = document.createElement("button"); b.className = "btn"; b.textContent = "Add your first movie"; b.onclick = openAdd;
+    g.firstChild.appendChild(b); return;
+  }
+  g.className = "grid";
+  if(!list.length){ g.className = ""; g.innerHTML = '<div class="empty">No movies match that search.</div>'; return; }
+  list.forEach(m => {
+    const b = document.createElement("button"); b.className = "movie";
+    const u = URL.createObjectURL(m.thumb); urls.push(u);
+    b.innerHTML = '<div class="poster"><img alt=""></div><b></b><span></span>';
+    b.querySelector("img").src = u;
+    b.querySelector("b").textContent = m.title;
+    b.querySelector("span").textContent = m.desc || "";
+    b.onclick = () => play(m);
+    g.appendChild(b);
+  });
+}
+$("search").oninput = render;
+
+/* ---------- Add movie ---------- */
+let thumbBlob = null;
+function openAdd(){
+  ["fVideo", "fThumb"].forEach(i => $(i).value = "");
+  $("fTitle").value = $("fDesc").value = $("addErr").textContent = ""; thumbBlob = null;
+  $("thumbPrev").classList.add("hidden"); $("addModal").classList.remove("hidden"); $("fVideo").focus();
+}
+$("addBtn").onclick = openAdd;
+$("addCancel").onclick = () => $("addModal").classList.add("hidden");
+$("fVideo").onchange = () => {
+  const f = $("fVideo").files[0];
+  if(f && !$("fTitle").value) $("fTitle").value = f.name.replace(/\.[^.]+$/, "").replace(/[._]+/g, " ").trim();
+};
+$("fThumb").onchange = () => {
+  const f = $("fThumb").files[0]; if(!f) return;
+  thumbBlob = f; $("thumbPrev").src = URL.createObjectURL(f); $("thumbPrev").classList.remove("hidden");
+};
+function frameFrom(file){
+  return new Promise(res => {
+    const v = document.createElement("video"), u = URL.createObjectURL(file);
+    v.muted = true; v.preload = "metadata"; v.src = u;
+    const done = blob => { URL.revokeObjectURL(u); res(blob); };
+    v.onerror = () => done(null);
+    v.onloadedmetadata = () => { v.currentTime = Math.min(5, (v.duration || 10) * 0.1); };
+    v.onseeked = () => {
+      const c = document.createElement("canvas"); c.width = 400; c.height = 600;
+      const x = c.getContext("2d"), s = Math.max(400 / v.videoWidth, 600 / v.videoHeight);
+      x.fillStyle = "#18283f"; x.fillRect(0, 0, 400, 600);
+      x.drawImage(v, (400 - v.videoWidth * s) / 2, (600 - v.videoHeight * s) / 2, v.videoWidth * s, v.videoHeight * s);
+      c.toBlob(done, "image/jpeg", .85);
+    };
+  });
+}
+function placeholder(title){
+  return new Promise(res => {
+    const c = document.createElement("canvas"); c.width = 400; c.height = 600; const x = c.getContext("2d");
+    x.fillStyle = "#a8283a"; x.fillRect(0, 0, 400, 600);
+    x.fillStyle = "#f3ede2"; x.font = "800 44px sans-serif"; x.textAlign = "center";
+    title.slice(0, 40).split(" ").reduce((ls, w) => { const l = ls[ls.length - 1]; (l + " " + w).length > 12 ? ls.push(w) : ls[ls.length - 1] = (l + " " + w).trim(); return ls; }, [""]).forEach((l, i) => x.fillText(l, 200, 260 + i * 54));
+    c.toBlob(res, "image/jpeg", .85);
+  });
+}
+$("addSave").onclick = async () => {
+  const f = $("fVideo").files[0], title = $("fTitle").value.trim(), err = $("addErr");
+  if(!f) return err.textContent = "Choose a movie file.";
+  if(!title) return err.textContent = "Enter a title.";
+  err.textContent = "Saving…"; $("addSave").disabled = true;
+  try{
+    const thumb = thumbBlob || await frameFrom(f) || await placeholder(title);
+    const m = {id: crypto.randomUUID(), owner: user.email, title, desc: $("fDesc").value.trim(), thumb, video: f, added: Date.now()};
+    await putMovie(m); movies.unshift(m); render(); $("addModal").classList.add("hidden");
+  }catch(e){ err.textContent = "Couldn’t save this file. Your browser may be out of storage space."; }
+  $("addSave").disabled = false;
+};
+
+/* ---------- Player ---------- */
+function play(m){
+  currentMovie = m; playUrl = URL.createObjectURL(m.video);
+  $("player").src = playUrl; $("pTitle").textContent = m.title; $("pDesc").textContent = m.desc || "No description.";
+  $("playModal").classList.remove("hidden"); $("player").play().catch(() => {});
+}
+function closePlayer(){
+  $("player").pause(); $("player").removeAttribute("src"); $("player").load();
+  if(playUrl) URL.revokeObjectURL(playUrl); playUrl = null; $("playModal").classList.add("hidden");
+}
+$("pClose").onclick = closePlayer;
+$("pDel").onclick = async () => {
+  if(!confirm("Remove “" + currentMovie.title + "” from your library?")) return;
+  await delMovie(currentMovie.id); movies = movies.filter(x => x.id !== currentMovie.id); closePlayer(); render();
+};
+document.addEventListener("keydown", e => {
+  if(e.key !== "Escape") return;
+  if(!$("playModal").classList.contains("hidden")) closePlayer();
+  $("addModal").classList.add("hidden");
+});
+
+/* ---------- Boot ---------- */
+(async () => {
+  db = await openDB(); initGoogle();
+  const s = localStorage.getItem("kitflix_session"), u = s && await getUser(s);
+  if(u){ user = u; showApp(); } else $("auth").classList.remove("hidden");
+})();
+</script>
+</body>
+</html>
