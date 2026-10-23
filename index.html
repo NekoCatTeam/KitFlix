@@ -38,11 +38,18 @@ header{display:flex;align-items:center;gap:1rem;padding:.9rem clamp(1rem,4vw,2.5
 header .grow{flex:1}
 header input{max-width:260px}
 .who{color:var(--mute);font-size:.9rem}
-main{padding:2rem clamp(1rem,4vw,2.5rem) 4rem}
-main h2{margin:0 0 1rem;font-size:1.3rem;letter-spacing:-.02em}
+main{padding:1.5rem clamp(1rem,4vw,2.5rem) 4rem}
+main section{margin-bottom:2.4rem}
+.sechead{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:1rem}
+.sechead h2{margin:0;font-size:1.3rem;letter-spacing:-.02em;margin-right:auto}
 .tabs{display:flex;gap:.5rem;margin-bottom:1.4rem}
 .tabs button{background:none;border:1px solid var(--line);border-radius:99px;padding:.3rem .95rem;color:var(--mute)}
 .tabs button[aria-pressed=true]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.tiles{display:flex;flex-wrap:wrap;gap:.8rem}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:.9rem 1.2rem;text-align:left;min-width:150px}
+.tile:hover{border-color:var(--amber)}
+.tile b{display:block}
+.tile small{color:var(--mute)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.4rem}
 .movie{background:none;border:0;padding:0;text-align:left}
 .poster{aspect-ratio:2/3;border-radius:var(--r);overflow:hidden;background:var(--panel);border:1px solid var(--line);position:relative;transition:transform .15s,border-color .15s}
@@ -50,14 +57,14 @@ main h2{margin:0 0 1rem;font-size:1.3rem;letter-spacing:-.02em}
 .poster img{width:100%;height:100%;object-fit:cover;display:block}
 .badge{position:absolute;left:.5rem;bottom:.5rem;background:rgba(15,27,45,.88);border-radius:6px;padding:.1rem .5rem;font-size:.78rem}
 .badge.warn{color:var(--amber)}
+.heart{position:absolute;right:.5rem;top:.5rem;background:rgba(15,27,45,.88);border-radius:99px;width:1.8rem;height:1.8rem;display:grid;place-items:center;color:#ff6b81}
 .movie b{display:block;margin-top:.55rem}
-.movie span{color:var(--mute);font-size:.88rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.movie .d{color:var(--mute);font-size:.88rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .empty{border:1px dashed var(--line);border-radius:16px;padding:3rem 1.5rem;text-align:center;color:var(--mute)}
 .empty .btn{margin-top:1rem}
 
-.modal{position:fixed;inset:0;background:rgba(5,10,20,.8);display:grid;place-items:center;padding:1rem;z-index:20;overflow:auto}
+.modal{position:fixed;inset:0;background:rgba(5,10,20,.82);display:grid;place-items:center;padding:1rem;z-index:20;overflow:auto}
 .sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.5rem;width:100%;max-width:520px;margin:auto}
-.sheet.wide{max-width:960px}
 .sheet h3{margin:0 0 .5rem}
 .row{display:flex;gap:.7rem;justify-content:flex-end;margin-top:1.2rem;flex-wrap:wrap}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
@@ -66,13 +73,41 @@ main h2{margin:0 0 1rem;font-size:1.3rem;letter-spacing:-.02em}
 .src input{width:auto}
 .src label:has(input:checked){border-color:var(--amber)}
 .thumbprev{width:90px;aspect-ratio:2/3;object-fit:cover;border-radius:8px;border:1px solid var(--line);margin-top:.5rem}
-video{width:100%;max-height:68vh;background:#000;border-radius:var(--r)}
-.desc{color:var(--mute);margin:.6rem 0 0;white-space:pre-wrap}
-.eps{display:flex;flex-direction:column;gap:.4rem;margin-top:1rem}
-.ep{text-align:left;background:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:.5rem .8rem;display:flex;justify-content:space-between;gap:1rem}
-.ep[aria-current=true]{border-color:var(--amber)}
+.checks label{display:flex;gap:.6rem;align-items:center;color:var(--paper);margin:.5rem 0}
+.checks input{width:auto}
+
+/* overview */
+.ov{max-width:880px;padding:0;overflow:hidden}
+.hero{position:relative;min-height:min(46vh,340px);display:flex;align-items:flex-end;background:var(--ink)}
+.heroImg{position:absolute;inset:0;background-size:cover;background-position:center}
+#trailer{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;background:#000}
+#trailer.on{opacity:1}
+.snd{position:absolute;right:3.4rem;top:.8rem;z-index:2;height:2.2rem;border-radius:99px;border:0;background:rgba(15,27,45,.85);padding:0 .9rem;font-size:.85rem}
+.heroImg.blur{filter:blur(18px) brightness(.7);transform:scale(1.15)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(24,40,63,0) 25%,var(--panel))}
+.heroBody{position:relative;z-index:1;padding:1.5rem;width:100%}
+.heroBody img{max-width:min(320px,70%);max-height:110px;object-fit:contain;display:block}
+.heroBody h2{margin:0;font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:-.03em;line-height:1.05}
+.xbtn{position:absolute;right:.8rem;top:.8rem;z-index:2;width:2.2rem;height:2.2rem;border-radius:99px;border:0;background:rgba(15,27,45,.85)}
+.meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9rem}
+.pill{border:1px solid var(--mute);border-radius:6px;padding:0 .5rem;font-size:.85rem;background:rgba(15,27,45,.6)}
+.ovBody{padding:0 1.5rem 1.5rem}
+.actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.desc{color:var(--mute);margin:1rem 0 0;white-space:pre-wrap}
+.eps{display:flex;flex-direction:column;gap:.4rem;margin-top:1.2rem}
+.ep{text-align:left;background:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:.6rem .8rem;display:flex;justify-content:space-between;gap:1rem}
+.ep:hover{border-color:var(--amber)}
 .ep small{color:var(--mute)}
 .addep{border-top:1px solid var(--line);margin-top:1.2rem;padding-top:.4rem}
+
+/* fullscreen player */
+#pl{position:fixed;inset:0;background:#000;z-index:50;display:grid;place-items:center}
+#pl video{width:100%;height:100%;background:#000}
+#pl .bar{position:absolute;left:0;right:0;top:0;padding:.8rem 1rem;padding-top:calc(.8rem + env(safe-area-inset-top,0px));display:flex;gap:1rem;align-items:center;background:linear-gradient(rgba(0,0,0,.7),transparent);transition:opacity .3s;pointer-events:none}
+#pl .bar button{pointer-events:auto}
+#pl.idle .bar{opacity:0}
+#pl.idle{cursor:none}
+#plErr{position:absolute;bottom:4.5rem;left:1rem;right:1rem;text-align:center;background:rgba(0,0,0,.8);padding:.7rem;border-radius:var(--r);color:#ff8a98}
 @media (max-width:560px){.split{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -103,62 +138,109 @@ video{width:100%;max-height:68vh;background:#000;border-radius:var(--r)}
     <button class="btn ghost" id="outBtn">Sign out</button>
   </header>
   <main>
-    <h2 id="libTitle">My library</h2>
-    <div class="tabs" role="group" aria-label="Filter">
-      <button data-f="all" aria-pressed="true">All</button>
-      <button data-f="movie" aria-pressed="false">Movies</button>
-      <button data-f="show" aria-pressed="false">Shows</button>
-    </div>
-    <div id="grid" class="grid"></div>
+    <section id="favSec" class="hidden"><div class="sechead"><h2>Favourites</h2></div><div id="favGrid" class="grid"></div></section>
+    <section id="colSec" class="hidden">
+      <div class="sechead"><h2>Collections</h2><button class="btn ghost" id="newCol">New collection</button></div>
+      <div id="tiles" class="tiles"></div>
+    </section>
+    <section>
+      <div class="sechead"><h2 id="libTitle">Library</h2>
+        <span id="colTools" class="hidden"><button class="btn ghost" id="colBack">All titles</button> <button class="btn ghost" id="colRen">Rename</button> <button class="btn danger" id="colDel">Delete</button></span>
+      </div>
+      <div class="tabs" role="group" aria-label="Filter">
+        <button data-f="all" aria-pressed="true">All</button>
+        <button data-f="movie" aria-pressed="false">Movies</button>
+        <button data-f="show" aria-pressed="false">Shows</button>
+      </div>
+      <div id="grid" class="grid"></div>
+    </section>
   </main>
 </section>
 
-<!-- Add title -->
+<!-- Add / edit -->
 <div id="addModal" class="modal hidden"><div class="sheet">
-  <h3>Add a movie or show</h3>
-  <label for="fKind">Type</label>
-  <select id="fKind"><option value="movie">Movie</option><option value="show">Show</option></select>
-
-  <div class="src" role="radiogroup" aria-label="Source">
-    <label><input type="radio" name="src" value="link" checked> Video link</label>
-    <label><input type="radio" name="src" value="local"> From this device</label>
+  <h3 id="addHead">Add a movie or show</h3>
+  <div id="newOnly">
+    <label for="fKind">Type</label>
+    <select id="fKind"><option value="movie">Movie</option><option value="show">Show</option></select>
+    <div class="src" role="radiogroup" aria-label="Source">
+      <label><input type="radio" name="src" value="link" checked> Video link</label>
+      <label><input type="radio" name="src" value="local"> From this device</label>
+    </div>
+    <div id="linkWrap"><label for="fLink">Direct video link</label><input id="fLink" type="url" placeholder="https://example.com/movie.mp4">
+      <p class="note">Must point straight at a video file (.mp4, .webm). Page links like YouTube won’t play. Saved to your library.</p></div>
+    <div id="fileWrap" class="hidden"><label for="fFile">Video file</label><input id="fFile" type="file" accept="video/*">
+      <p class="note">Local files aren’t saved. They stay in your library until you reload or sign out.</p></div>
   </div>
-  <div id="linkWrap"><label for="fLink">Direct video link</label><input id="fLink" type="url" placeholder="https://example.com/movie.mp4">
-    <p class="note">Must point straight at a video file (.mp4, .webm). Page links like YouTube won’t play. Saved to your library.</p></div>
-  <div id="fileWrap" class="hidden"><label for="fFile">Video file</label><input id="fFile" type="file" accept="video/*">
-    <p class="note">Local files aren’t saved. They stay in your library until you reload or sign out.</p></div>
-
   <label for="fTitle">Title</label><input id="fTitle">
   <div id="epNameWrap" class="hidden"><label for="fEpName">First episode name</label><input id="fEpName" value="Episode 1"></div>
   <label for="fDesc">Description</label><textarea id="fDesc" rows="3"></textarea>
-  <label for="fThumb">Thumbnail image</label><input id="fThumb" type="file" accept="image/*">
-  <img id="thumbPrev" class="thumbprev hidden" alt="Thumbnail preview">
-  <p class="note">No image? KitFlix tries to grab a frame, or makes a title card.</p>
+  <div class="split">
+    <div><label for="fQuality">Video quality</label>
+      <select id="fQuality"><option value="">Not set</option><option>SD</option><option>HD 720p</option><option>Full HD 1080p</option><option>4K UHD</option></select></div>
+    <div><label for="fLength">Length</label><input id="fLength" placeholder="e.g. 1h 52m"></div>
+  </div>
+  <label for="fThumb">Poster image</label><input id="fThumb" type="file" accept="image/*">
+  <img id="thumbPrev" class="thumbprev hidden" alt="Poster preview">
+  <p class="note" id="posterNote">No poster? KitFlix tries to grab a frame, or makes a title card.</p>
+  <label for="fLogo">Logo image (transparent PNG works best)</label><input id="fLogo" type="file" accept="image/*">
+  <label for="fBack">Backdrop image (wide)</label><input id="fBack" type="file" accept="image/*">
+  <label for="fTrailer">Trailer link (direct video link)</label><input id="fTrailer" type="url" placeholder="https://example.com/trailer.mp4">
+  <label for="fTrailerFile">Or trailer file from this device</label><input id="fTrailerFile" type="file" accept="video/*">
+  <p class="note">The trailer plays quietly on the overview after 5 seconds. A link is saved; a local file lasts this session only.</p>
   <p class="err" id="addErr" role="alert"></p>
   <div class="row"><button class="btn ghost" id="addCancel">Cancel</button><button class="btn" id="addSave">Add to library</button></div>
 </div></div>
 
-<!-- Player -->
-<div id="playModal" class="modal hidden"><div class="sheet wide">
-  <video id="player" controls></video>
-  <p class="err" id="pErr" role="alert"></p>
-  <h3 id="pTitle"></h3>
-  <p class="desc" id="pDesc"></p>
-  <div class="eps" id="eps"></div>
-  <div class="addep hidden" id="addEp">
-    <label for="eName">Add an episode</label>
-    <div class="split"><input id="eName" placeholder="Episode name"><input id="eLink" type="url" placeholder="Direct video link"></div>
-    <div class="split" style="margin-top:.5rem"><input id="eFile" type="file" accept="video/*" aria-label="Or choose a local file"><button class="btn ghost" id="eAdd">Add episode</button></div>
-    <p class="note">Use a link (saved) or a local file (this session only). A link wins if both are filled.</p>
-    <p class="err" id="eErr" role="alert"></p>
+<!-- Overview -->
+<div id="ovModal" class="modal hidden"><div class="sheet ov">
+  <div class="hero">
+    <div class="heroImg" id="heroImg"></div>
+    <video id="trailer" muted playsinline preload="none"></video>
+    <button class="snd hidden" id="trSound">Sound on</button>
+    <button class="xbtn" id="ovClose" aria-label="Close">✕</button>
+    <div class="heroBody"><div id="ovLogo"></div><div class="meta" id="ovMeta"></div></div>
   </div>
-  <div class="row"><button class="btn danger" id="pDel">Remove from library</button><button class="btn ghost" id="pClose">Close</button></div>
+  <div class="ovBody">
+    <div class="actions">
+      <button class="btn" id="ovPlay">▶ Play</button>
+      <button class="btn ghost" id="ovFav" aria-pressed="false">♡ Favourite</button>
+      <button class="btn ghost" id="ovCol">Collections</button>
+      <button class="btn ghost" id="ovEdit">Edit details</button>
+    </div>
+    <p class="desc" id="ovDesc"></p>
+    <div class="eps" id="eps"></div>
+    <div class="addep hidden" id="addEp">
+      <label for="eName">Add an episode</label>
+      <div class="split"><input id="eName" placeholder="Episode name"><input id="eLink" type="url" placeholder="Direct video link"></div>
+      <div class="split" style="margin-top:.5rem"><input id="eFile" type="file" accept="video/*" aria-label="Or choose a local file"><button class="btn ghost" id="eAdd">Add episode</button></div>
+      <p class="note">A link is saved; a local file lasts this session only. A link wins if both are filled.</p>
+      <p class="err" id="eErr" role="alert"></p>
+    </div>
+    <div class="row"><button class="btn danger" id="ovDel">Remove from library</button></div>
+  </div>
 </div></div>
+
+<!-- Collections picker -->
+<div id="colModal" class="modal hidden"><div class="sheet">
+  <h3>Add to collections</h3>
+  <div class="checks" id="colList"></div>
+  <label for="colNew">New collection</label>
+  <div class="split"><input id="colNew" placeholder="Name"><button class="btn ghost" id="colMake">Create and add</button></div>
+  <div class="row"><button class="btn" id="colDone">Done</button></div>
+</div></div>
+
+<!-- Fullscreen player -->
+<div id="pl" class="hidden">
+  <video id="player" controls playsinline></video>
+  <div class="bar"><button class="btn ghost" id="plBack">← Back</button><b id="plTitle"></b></div>
+  <div id="plErr" class="hidden" role="alert"></div>
+</div>
 
 <script>
 const $ = id => document.getElementById(id);
-let db, user = null, items = [], mode = "in", filter = "all", cur = null, curEp = -1, playUrl = null;
-const urls = [];
+let db, user = null, items = [], mode = "in", filter = "all", cur = null, curEp = 0, playUrl = null, viewCol = null, editing = null;
+const urls = [], ovUrls = [];
 const uid = () => crypto.randomUUID();
 
 /* ---------- IndexedDB ---------- */
@@ -183,12 +265,14 @@ const putUser = u => tx("users", "readwrite", s => s.put(u));
 const getItems = o => tx("movies", "readonly", s => s.index("owner").getAll(o));
 const putItem = m => tx("movies", "readwrite", s => s.put(m));
 const delItem = id => tx("movies", "readwrite", s => s.delete(id));
+const saveUser = () => putUser(user);
 
 /* Only link episodes are saved. Local files stay in memory for this session. */
 async function persist(it){
   const saved = it.episodes.filter(e => e.link);
   if(saved.length){
-    await putItem({id: it.id, owner: it.owner, kind: it.kind, title: it.title, desc: it.desc, thumb: it.thumb, added: it.added,
+    await putItem({id: it.id, owner: it.owner, kind: it.kind, title: it.title, desc: it.desc, thumb: it.thumb, logo: it.logo, backdrop: it.backdrop,
+      quality: it.quality, length: it.length, trailer: it.trailer || "", fav: it.fav, added: it.added,
       episodes: saved.map(e => ({id: e.id, name: e.name, link: e.link}))});
   } else await delItem(it.id);
 }
@@ -221,7 +305,7 @@ $("authGo").onclick = async () => {
   if(mode === "up"){
     if(existing) return err.textContent = "That email already has an account. Sign in instead.";
     const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
-    const u = {email, name: $("aName").value.trim() || email.split("@")[0], salt, hash: await hash(pw, salt)};
+    const u = {email, name: $("aName").value.trim() || email.split("@")[0], salt, hash: await hash(pw, salt), collections: []};
     await putUser(u); login(u);
   } else {
     if(!existing) return err.textContent = "No account found for that email.";
@@ -230,17 +314,18 @@ $("authGo").onclick = async () => {
   }
 };
 [$("aEmail"), $("aPass"), $("aName")].forEach(i => i.addEventListener("keydown", e => e.key === "Enter" && $("authGo").click()));
-function login(u){ user = u; localStorage.setItem("kitflix_session", u.email); $("aPass").value = ""; showApp(); }
+function login(u){ user = u; user.collections = user.collections || []; localStorage.setItem("kitflix_session", u.email); $("aPass").value = ""; showApp(); }
 $("outBtn").onclick = () => {
-  localStorage.removeItem("kitflix_session"); user = null; items = [];
-  urls.forEach(URL.revokeObjectURL); urls.length = 0;
+  localStorage.removeItem("kitflix_session"); user = null; items = []; viewCol = null;
+  urls.forEach(URL.revokeObjectURL); urls.length = 0; stopTrailer(); closePlay();
+  ["ovModal", "addModal", "colModal"].forEach(i => $(i).classList.add("hidden"));
   $("app").classList.add("hidden"); $("auth").classList.remove("hidden");
 };
 
 /* ---------- Library ---------- */
 async function showApp(){
   $("auth").classList.add("hidden"); $("app").classList.remove("hidden");
-  $("who").textContent = user.name; $("libTitle").textContent = user.name + "’s library";
+  $("who").textContent = user.name;
   items = (await getItems(user.email)).filter(m => m.episodes).sort((a, b) => b.added - a.added);
   render();
 }
@@ -249,60 +334,97 @@ document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
   document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-pressed", x === b));
   render();
 });
+function card(m){
+  const b = document.createElement("button"); b.className = "movie";
+  const u = URL.createObjectURL(m.thumb); urls.push(u);
+  b.innerHTML = '<div class="poster"><img alt=""><span class="badge"></span></div><b></b><span class="d"></span>';
+  b.querySelector("img").src = u;
+  const bd = b.querySelector(".badge"), saved = m.episodes.some(e => e.link);
+  bd.textContent = (m.kind === "show" ? "Show · " + m.episodes.length + " ep" : "Movie") + (saved ? "" : " · session only");
+  if(!saved) bd.classList.add("warn");
+  if(m.fav){ const h = document.createElement("span"); h.className = "heart"; h.textContent = "♥"; h.setAttribute("aria-label", "Favourite"); b.querySelector(".poster").appendChild(h); }
+  b.querySelector("b").textContent = m.title;
+  b.querySelector(".d").textContent = m.desc || "";
+  b.onclick = () => openOverview(m);
+  return b;
+}
+const fill = (el, list) => { el.innerHTML = ""; list.forEach(m => el.appendChild(card(m))); };
+const msg = (el, text) => { el.className = ""; el.innerHTML = '<div class="empty"></div>'; el.firstChild.textContent = text; };
 function render(){
   urls.forEach(URL.revokeObjectURL); urls.length = 0;
-  const q = $("search").value.trim().toLowerCase(), g = $("grid");
-  const list = items.filter(m => (filter === "all" || m.kind === filter) && (!q || m.title.toLowerCase().includes(q) || (m.desc || "").toLowerCase().includes(q)));
-  g.innerHTML = "";
-  if(!items.length){
-    g.className = ""; g.innerHTML = '<div class="empty"><p>Your library is empty. Add a movie or show from a video link or your device.</p></div>';
-    const b = document.createElement("button"); b.className = "btn"; b.textContent = "Add your first title"; b.onclick = openAdd;
-    g.firstChild.appendChild(b); return;
-  }
-  if(!list.length){ g.className = ""; g.innerHTML = '<div class="empty">Nothing matches.</div>'; return; }
-  g.className = "grid";
-  list.forEach(m => {
-    const b = document.createElement("button"); b.className = "movie";
-    const u = URL.createObjectURL(m.thumb); urls.push(u);
-    b.innerHTML = '<div class="poster"><img alt=""><span class="badge"></span></div><b></b><span></span>';
-    b.querySelector("img").src = u;
-    const bd = b.querySelector(".badge"), local = m.episodes.some(e => e.file), saved = m.episodes.some(e => e.link);
-    bd.textContent = (m.kind === "show" ? "Show · " + m.episodes.length + " ep" : "Movie") + (saved ? "" : " · session only");
-    if(!saved) bd.classList.add("warn");
-    b.querySelector("b").textContent = m.title;
-    b.querySelector("span:last-child").textContent = m.desc || "";
-    b.onclick = () => openPlayer(m);
-    g.appendChild(b);
+  const q = $("search").value.trim().toLowerCase();
+  const hit = m => !q || m.title.toLowerCase().includes(q) || (m.desc || "").toLowerCase().includes(q);
+  const cols = user.collections;
+  const col = viewCol && cols.find(c => c.id === viewCol); if(!col) viewCol = null;
+  const favs = items.filter(m => m.fav && hit(m));
+  $("favSec").classList.toggle("hidden", !!col || !favs.length);
+  $("colSec").classList.toggle("hidden", !!col || !(items.length || cols.length));
+  fill($("favGrid"), favs);
+  const t = $("tiles"); t.innerHTML = "";
+  cols.forEach(c => {
+    const b = document.createElement("button"); b.className = "tile";
+    b.innerHTML = "<b></b><small></small>"; b.firstChild.textContent = c.name;
+    const n = c.ids.filter(id => items.some(m => m.id === id)).length;
+    b.lastChild.textContent = n + (n === 1 ? " title" : " titles");
+    b.onclick = () => { viewCol = c.id; filter = "all"; document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-pressed", x.dataset.f === "all")); render(); scrollTo(0, 0); };
+    t.appendChild(b);
   });
+  if(!cols.length){ const p = document.createElement("p"); p.className = "note"; p.textContent = "No collections yet. Make one to group your favourite films."; t.appendChild(p); }
+  $("libTitle").textContent = col ? col.name : "Library"; $("colTools").classList.toggle("hidden", !col);
+  const base = col ? items.filter(m => col.ids.includes(m.id)) : items;
+  const list = base.filter(m => (filter === "all" || m.kind === filter) && hit(m));
+  const g = $("grid");
+  if(!items.length){
+    msg(g, "Your library is empty. Add a movie or show from a video link or your device.");
+    const b = document.createElement("button"); b.className = "btn"; b.textContent = "Add your first title"; b.onclick = () => openAdd(null); g.firstChild.appendChild(b);
+  } else if(!base.length) msg(g, "This collection is empty. Open a title and use Collections to add it.");
+  else if(!list.length) msg(g, "Nothing matches.");
+  else { g.className = "grid"; fill(g, list); }
 }
 $("search").oninput = render;
 
-/* ---------- Add title ---------- */
-let thumbBlob = null;
-const srcVal = () => document.querySelector('input[name=src]:checked').value;
-function syncAdd(){
-  $("linkWrap").classList.toggle("hidden", srcVal() !== "link");
-  $("fileWrap").classList.toggle("hidden", srcVal() !== "local");
-  $("epNameWrap").classList.toggle("hidden", $("fKind").value !== "show");
+/* ---------- Collections ---------- */
+async function makeCollection(){
+  const n = (prompt("Name your collection") || "").trim(); if(!n) return null;
+  const c = {id: uid(), name: n, ids: []}; user.collections.push(c); await saveUser(); return c;
 }
-document.querySelectorAll('input[name=src]').forEach(r => r.onchange = syncAdd);
-$("fKind").onchange = syncAdd;
-function openAdd(){
-  ["fLink", "fFile", "fThumb", "fTitle", "fDesc"].forEach(i => $(i).value = "");
-  $("fEpName").value = "Episode 1"; $("fKind").value = "movie"; document.querySelector('input[name=src][value=link]').checked = true;
-  $("addErr").textContent = ""; thumbBlob = null; $("thumbPrev").classList.add("hidden"); syncAdd();
-  $("addModal").classList.remove("hidden"); $("fLink").focus();
+$("newCol").onclick = async () => { await makeCollection(); render(); };
+$("colBack").onclick = () => { viewCol = null; render(); };
+$("colRen").onclick = async () => {
+  const c = user.collections.find(x => x.id === viewCol), n = (prompt("Rename collection", c.name) || "").trim();
+  if(n){ c.name = n; await saveUser(); render(); }
+};
+$("colDel").onclick = async () => {
+  const c = user.collections.find(x => x.id === viewCol);
+  if(!confirm("Delete the collection “" + c.name + "”? Your titles stay in the library.")) return;
+  user.collections = user.collections.filter(x => x.id !== c.id); viewCol = null; await saveUser(); render();
+};
+function drawColList(){
+  const box = $("colList"); box.innerHTML = "";
+  if(!user.collections.length){ box.innerHTML = '<p class="note">No collections yet. Create one below.</p>'; return; }
+  user.collections.forEach(c => {
+    const l = document.createElement("label"), i = document.createElement("input"), s = document.createElement("span");
+    i.type = "checkbox"; i.checked = c.ids.includes(cur.id); s.textContent = c.name;
+    i.onchange = async () => { c.ids = c.ids.filter(x => x !== cur.id); if(i.checked) c.ids.push(cur.id); await saveUser(); };
+    l.append(i, s); box.appendChild(l);
+  });
 }
-$("addBtn").onclick = openAdd;
-$("addCancel").onclick = () => $("addModal").classList.add("hidden");
-$("fFile").onchange = () => {
-  const f = $("fFile").files[0];
-  if(f && !$("fTitle").value) $("fTitle").value = f.name.replace(/\.[^.]+$/, "").replace(/[._]+/g, " ").trim();
+$("ovCol").onclick = () => { drawColList(); $("colNew").value = ""; $("colModal").classList.remove("hidden"); };
+$("colMake").onclick = async () => {
+  const n = $("colNew").value.trim(); if(!n) return;
+  const c = {id: uid(), name: n, ids: [cur.id]}; user.collections.push(c); await saveUser(); $("colNew").value = ""; drawColList();
 };
-$("fThumb").onchange = () => {
-  const f = $("fThumb").files[0]; if(!f) return;
-  thumbBlob = f; $("thumbPrev").src = URL.createObjectURL(f); $("thumbPrev").classList.remove("hidden");
-};
+$("colDone").onclick = () => { $("colModal").classList.add("hidden"); render(); };
+
+/* ---------- Images ---------- */
+async function shrink(file, maxW, type, q){
+  try{
+    const b = await createImageBitmap(file), s = Math.min(1, maxW / b.width);
+    const c = document.createElement("canvas"); c.width = Math.round(b.width * s); c.height = Math.round(b.height * s);
+    c.getContext("2d").drawImage(b, 0, 0, c.width, c.height);
+    return await new Promise(r => c.toBlob(x => r(x || file), type, q));
+  }catch(e){ return file; }
+}
 function frameFrom(src){
   return new Promise(res => {
     const v = document.createElement("video"); let done = false;
@@ -331,69 +453,121 @@ function placeholder(title){
     c.toBlob(res, "image/jpeg", .85);
   });
 }
-function validLink(s){ try{ return /^https?:$/.test(new URL(s).protocol); }catch(e){ return false; } }
+const validLink = s => { try{ return /^https?:$/.test(new URL(s).protocol); }catch(e){ return false; } };
+
+/* ---------- Add / edit ---------- */
+const srcVal = () => document.querySelector("input[name=src]:checked").value;
+function syncAdd(){
+  $("linkWrap").classList.toggle("hidden", srcVal() !== "link");
+  $("fileWrap").classList.toggle("hidden", srcVal() !== "local");
+  $("epNameWrap").classList.toggle("hidden", editing || $("fKind").value !== "show");
+}
+document.querySelectorAll("input[name=src]").forEach(r => r.onchange = syncAdd);
+$("fKind").onchange = syncAdd;
+function openAdd(it){
+  editing = it;
+  ["fLink", "fFile", "fThumb", "fLogo", "fBack", "fTrailerFile"].forEach(i => $(i).value = "");
+  $("fTrailer").value = it ? it.trailer || "" : ""; if(it) stopTrailer();
+  $("fTitle").value = it ? it.title : ""; $("fDesc").value = it ? it.desc || "" : "";
+  $("fQuality").value = it ? it.quality || "" : ""; $("fLength").value = it ? it.length || "" : "";
+  $("fEpName").value = "Episode 1"; $("fKind").value = "movie"; document.querySelector("input[name=src][value=link]").checked = true;
+  $("newOnly").classList.toggle("hidden", !!it);
+  $("addHead").textContent = it ? "Edit details" : "Add a movie or show";
+  $("addSave").textContent = it ? "Save changes" : "Add to library";
+  $("posterNote").textContent = it ? "Leave image fields empty to keep the current ones." : "No poster? KitFlix tries to grab a frame, or makes a title card.";
+  $("addErr").textContent = ""; $("thumbPrev").classList.add("hidden"); syncAdd();
+  $("addModal").classList.remove("hidden"); $(it ? "fTitle" : "fLink").focus();
+}
+$("addBtn").onclick = () => openAdd(null);
+function closeAdd(){ $("addModal").classList.add("hidden"); if(editing && !$("ovModal").classList.contains("hidden")) armTrailer(); }
+$("addCancel").onclick = closeAdd;
+$("fFile").onchange = () => {
+  const f = $("fFile").files[0];
+  if(f && !$("fTitle").value) $("fTitle").value = f.name.replace(/\.[^.]+$/, "").replace(/[._]+/g, " ").trim();
+};
+$("fThumb").onchange = () => {
+  const f = $("fThumb").files[0]; if(!f) return;
+  $("thumbPrev").src = URL.createObjectURL(f); $("thumbPrev").classList.remove("hidden");
+};
 $("addSave").onclick = async () => {
-  const kind = $("fKind").value, title = $("fTitle").value.trim(), err = $("addErr");
-  const ep = {id: uid(), name: kind === "show" ? ($("fEpName").value.trim() || "Episode 1") : title};
-  if(srcVal() === "link"){
-    const l = $("fLink").value.trim();
-    if(!validLink(l)) return err.textContent = "Enter a full video link starting with http:// or https://.";
-    ep.link = l;
-  } else {
-    const f = $("fFile").files[0];
-    if(!f) return err.textContent = "Choose a video file.";
-    ep.file = f;
-  }
+  const err = $("addErr"), title = $("fTitle").value.trim();
+  const pf = $("fThumb").files[0], lf = $("fLogo").files[0], bf = $("fBack").files[0];
   if(!title) return err.textContent = "Enter a title.";
-  err.textContent = "Adding…"; $("addSave").disabled = true;
+  const tl = $("fTrailer").value.trim(), tf = $("fTrailerFile").files[0];
+  if(tl && !validLink(tl)) return err.textContent = "Enter a full trailer link starting with http:// or https://.";
+  const fields = {title, desc: $("fDesc").value.trim(), quality: $("fQuality").value, length: $("fLength").value.trim(), trailer: tl};
+  err.textContent = "Saving…"; $("addSave").disabled = true;
   try{
-    let src = ep.link, tmp = null;
-    if(ep.file){ tmp = URL.createObjectURL(ep.file); src = tmp; }
-    const thumb = thumbBlob || await frameFrom(src) || await placeholder(title);
-    if(tmp) URL.revokeObjectURL(tmp);
-    const it = {id: uid(), owner: user.email, kind, title, desc: $("fDesc").value.trim(), thumb, added: Date.now(), episodes: [ep]};
-    await persist(it); items.unshift(it); render(); $("addModal").classList.add("hidden");
-  }catch(e){ err.textContent = "Couldn’t save this title. Your browser may be out of storage space."; }
-  $("addSave").disabled = false;
+    if(editing){
+      Object.assign(editing, fields); if(tf) editing.trailerFile = tf;
+      if(pf) editing.thumb = await shrink(pf, 600, "image/jpeg", .85);
+      if(lf) editing.logo = await shrink(lf, 800, "image/png");
+      if(bf) editing.backdrop = await shrink(bf, 1600, "image/jpeg", .85);
+      await persist(editing); closeAdd(); drawOverview(); render();
+    } else {
+      const kind = $("fKind").value;
+      const ep = {id: uid(), name: kind === "show" ? ($("fEpName").value.trim() || "Episode 1") : title};
+      if(srcVal() === "link"){
+        const l = $("fLink").value.trim();
+        if(!validLink(l)){ err.textContent = "Enter a full video link starting with http:// or https://."; return; }
+        ep.link = l;
+      } else {
+        const f = $("fFile").files[0];
+        if(!f){ err.textContent = "Choose a video file."; return; }
+        ep.file = f;
+      }
+      let thumb;
+      if(pf) thumb = await shrink(pf, 600, "image/jpeg", .85);
+      else {
+        const tmp = ep.file ? URL.createObjectURL(ep.file) : null;
+        thumb = await frameFrom(tmp || ep.link) || await placeholder(title);
+        if(tmp) URL.revokeObjectURL(tmp);
+      }
+      const it = {id: uid(), owner: user.email, kind, ...fields, thumb, fav: false, added: Date.now(), episodes: [ep], trailerFile: tf || null,
+        logo: lf ? await shrink(lf, 800, "image/png") : null, backdrop: bf ? await shrink(bf, 1600, "image/jpeg", .85) : null};
+      await persist(it); items.unshift(it); render(); $("addModal").classList.add("hidden");
+    }
+  }catch(e){ err.textContent = "Couldn’t save. Your browser may be out of storage space."; return; }
+  finally{ $("addSave").disabled = false; }
+  err.textContent = "";
 };
 
-/* ---------- Player ---------- */
-function setSrc(ep){
-  if(playUrl){ URL.revokeObjectURL(playUrl); playUrl = null; }
-  $("pErr").textContent = "";
-  if(ep.file){ playUrl = URL.createObjectURL(ep.file); $("player").src = playUrl; } else $("player").src = ep.link;
-  $("player").play().catch(() => {});
+/* ---------- Overview ---------- */
+function openOverview(m){
+  cur = m; $("eErr").textContent = ""; $("ovModal").classList.remove("hidden"); drawOverview(); armTrailer();
 }
-function drawEps(){
+function drawOverview(){
+  ovUrls.forEach(URL.revokeObjectURL); ovUrls.length = 0;
+  const u = b => { const x = URL.createObjectURL(b); ovUrls.push(x); return x; };
+  const hi = $("heroImg");
+  hi.className = "heroImg" + (cur.backdrop ? "" : " blur");
+  hi.style.backgroundImage = "url(" + u(cur.backdrop || cur.thumb) + ")";
+  const lg = $("ovLogo"); lg.innerHTML = "";
+  if(cur.logo){ const i = document.createElement("img"); i.src = u(cur.logo); i.alt = cur.title; lg.appendChild(i); }
+  else { const h = document.createElement("h2"); h.textContent = cur.title; lg.appendChild(h); }
+  const meta = $("ovMeta"); meta.innerHTML = "";
+  const pills = [cur.kind === "show" ? "Show" : "Movie", cur.quality, cur.length, cur.kind === "show" ? cur.episodes.length + (cur.episodes.length === 1 ? " episode" : " episodes") : ""];
+  pills.filter(Boolean).forEach(t => { const s = document.createElement("span"); s.className = "pill"; s.textContent = t; meta.appendChild(s); });
+  $("ovDesc").textContent = cur.desc || "No description yet. Use Edit details to add one.";
+  $("ovFav").textContent = cur.fav ? "♥ Favourited" : "♡ Favourite"; $("ovFav").setAttribute("aria-pressed", !!cur.fav);
+  $("addEp").classList.toggle("hidden", cur.kind !== "show");
   const box = $("eps"); box.innerHTML = "";
-  if(cur.kind !== "show" && cur.episodes.length < 2) return;
-  cur.episodes.forEach((ep, i) => {
+  if(cur.kind === "show" || cur.episodes.length > 1) cur.episodes.forEach((ep, i) => {
     const b = document.createElement("button"); b.className = "ep";
-    b.setAttribute("aria-current", i === curEp);
-    const n = document.createElement("span"); n.textContent = (i + 1) + ". " + ep.name;
+    const n = document.createElement("span"); n.textContent = "▶ " + (i + 1) + ". " + ep.name;
     const s = document.createElement("small"); s.textContent = ep.file ? "this session" : "saved";
-    b.append(n, s); b.onclick = () => { curEp = i; setSrc(ep); drawEps(); };
-    box.appendChild(b);
+    b.append(n, s); b.onclick = () => startPlay(i); box.appendChild(b);
   });
 }
-function openPlayer(m){
-  cur = m; curEp = 0;
-  $("pTitle").textContent = m.title; $("pDesc").textContent = m.desc || "No description.";
-  $("addEp").classList.toggle("hidden", m.kind !== "show"); $("eErr").textContent = "";
-  $("playModal").classList.remove("hidden"); drawEps(); setSrc(m.episodes[0]);
-}
-$("player").addEventListener("error", () => {
-  $("pErr").textContent = "This video couldn’t play. Check that the link points straight at a video file your browser supports (MP4 or WebM), and that the site allows playback from other sites.";
-});
-function closePlayer(){
-  $("player").pause(); $("player").removeAttribute("src"); $("player").load();
-  if(playUrl){ URL.revokeObjectURL(playUrl); playUrl = null; }
-  $("playModal").classList.add("hidden"); render();
-}
-$("pClose").onclick = closePlayer;
-$("pDel").onclick = async () => {
+function closeOverview(){ stopTrailer(); ovUrls.forEach(URL.revokeObjectURL); ovUrls.length = 0; $("ovModal").classList.add("hidden"); render(); }
+$("ovClose").onclick = closeOverview;
+$("ovPlay").onclick = () => startPlay(0);
+$("ovEdit").onclick = () => openAdd(cur);
+$("ovFav").onclick = async () => { cur.fav = !cur.fav; await persist(cur); drawOverview(); };
+$("ovDel").onclick = async () => {
   if(!confirm("Remove “" + cur.title + "” from your library?")) return;
-  await delItem(cur.id); items = items.filter(x => x.id !== cur.id); closePlayer();
+  await delItem(cur.id); items = items.filter(x => x.id !== cur.id);
+  user.collections.forEach(c => c.ids = c.ids.filter(x => x !== cur.id)); await saveUser(); closeOverview();
 };
 $("eAdd").onclick = async () => {
   const name = $("eName").value.trim() || ("Episode " + (cur.episodes.length + 1)), l = $("eLink").value.trim(), f = $("eFile").files[0], err = $("eErr");
@@ -402,20 +576,76 @@ $("eAdd").onclick = async () => {
   else if(f) ep.file = f;
   else return err.textContent = "Add a video link or choose a file.";
   cur.episodes.push(ep);
-  try{ await persist(cur); }catch(e){ err.textContent = "Couldn’t save this episode."; }
-  ["eName", "eLink", "eFile"].forEach(i => $(i).value = ""); err.textContent = ""; drawEps();
+  try{ await persist(cur); }catch(e){ err.textContent = "Couldn’t save this episode."; return; }
+  ["eName", "eLink", "eFile"].forEach(i => $(i).value = ""); err.textContent = ""; drawOverview();
 };
+
+/* ---------- Trailer (autoplays after 5 seconds on the overview) ---------- */
+const tr = $("trailer"); let trT, trUrl = null;
+function stopTrailer(){
+  clearTimeout(trT); tr.pause(); tr.classList.remove("on"); tr.removeAttribute("src"); tr.load();
+  if(trUrl){ URL.revokeObjectURL(trUrl); trUrl = null; }
+  $("trSound").classList.add("hidden");
+}
+function armTrailer(){
+  stopTrailer();
+  if(!cur || (!cur.trailer && !cur.trailerFile)) return;
+  trT = setTimeout(() => {
+    if(cur.trailerFile){ trUrl = URL.createObjectURL(cur.trailerFile); tr.src = trUrl; } else tr.src = cur.trailer;
+    tr.muted = true; $("trSound").textContent = "Sound on";
+    tr.play().then(() => { tr.classList.add("on"); $("trSound").classList.remove("hidden"); }).catch(stopTrailer);
+  }, 5000);
+}
+tr.addEventListener("error", () => { if(tr.getAttribute("src")) stopTrailer(); });
+tr.addEventListener("ended", () => { tr.classList.remove("on"); $("trSound").classList.add("hidden"); });
+$("trSound").onclick = () => { tr.muted = !tr.muted; $("trSound").textContent = tr.muted ? "Sound on" : "Sound off"; };
+
+/* ---------- Fullscreen player ---------- */
+const pl = $("pl"), vid = $("player");
+let idleT;
+function wake(){ pl.classList.remove("idle"); clearTimeout(idleT); idleT = setTimeout(() => pl.classList.add("idle"), 2800); }
+["mousemove", "touchstart", "keydown"].forEach(ev => pl.addEventListener(ev, wake));
+function setSrc(){
+  const ep = cur.episodes[curEp];
+  if(playUrl){ URL.revokeObjectURL(playUrl); playUrl = null; }
+  $("plErr").classList.add("hidden");
+  $("plTitle").textContent = cur.kind === "show" ? cur.title + " · " + ep.name : cur.title;
+  if(ep.file){ playUrl = URL.createObjectURL(ep.file); vid.src = playUrl; } else vid.src = ep.link;
+  vid.play().catch(() => {});
+}
+function startPlay(i){
+  stopTrailer(); curEp = i; pl.classList.remove("hidden"); setSrc(); wake();
+  const go = pl.requestFullscreen ? pl.requestFullscreen() : (vid.webkitEnterFullscreen && vid.webkitEnterFullscreen());
+  if(go && go.catch) go.catch(() => {});
+}
+function closePlay(){
+  if(pl.classList.contains("hidden")) return;
+  pl.classList.add("hidden"); vid.pause(); vid.removeAttribute("src"); vid.load();
+  if(playUrl){ URL.revokeObjectURL(playUrl); playUrl = null; }
+  if(document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  if(cur && !$("ovModal").classList.contains("hidden")) armTrailer();
+}
+$("plBack").onclick = closePlay;
+document.addEventListener("fullscreenchange", () => { if(!document.fullscreenElement) closePlay(); });
+vid.addEventListener("webkitendfullscreen", closePlay);
+vid.addEventListener("ended", () => { if(curEp + 1 < cur.episodes.length){ curEp++; setSrc(); } else closePlay(); });
+vid.addEventListener("error", () => {
+  const e = $("plErr"); e.textContent = "This video couldn’t play. Check that the link points straight at a video file your browser supports (MP4 or WebM), and that the site allows playback from other sites.";
+  e.classList.remove("hidden");
+});
 document.addEventListener("keydown", e => {
   if(e.key !== "Escape") return;
-  if(!$("playModal").classList.contains("hidden")) closePlayer();
-  $("addModal").classList.add("hidden");
+  if(!pl.classList.contains("hidden")) return closePlay();
+  for(const id of ["colModal", "addModal", "ovModal"]){
+    if(!$(id).classList.contains("hidden")){ id === "ovModal" ? closeOverview() : id === "addModal" ? closeAdd() : $(id).classList.add("hidden"); if(id === "colModal") render(); return; }
+  }
 });
 
 /* ---------- Boot ---------- */
 (async () => {
   db = await openDB();
   const s = localStorage.getItem("kitflix_session"), u = s && await getUser(s);
-  if(u){ user = u; showApp(); } else $("auth").classList.remove("hidden");
+  if(u){ login(u); } else $("auth").classList.remove("hidden");
 })();
 </script>
 </body>
