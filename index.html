@@ -100,14 +100,24 @@ main section{margin-bottom:2.4rem}
 .ep small{color:var(--mute)}
 .addep{border-top:1px solid var(--line);margin-top:1.2rem;padding-top:.4rem}
 
-/* fullscreen player */
-#pl{position:fixed;inset:0;background:#000;z-index:50;display:grid;place-items:center}
-#pl video{width:100%;height:100%;background:#000}
-#pl .bar{position:absolute;left:0;right:0;top:0;padding:.8rem 1rem;padding-top:calc(.8rem + env(safe-area-inset-top,0px));display:flex;gap:1rem;align-items:center;background:linear-gradient(rgba(0,0,0,.7),transparent);transition:opacity .3s;pointer-events:none}
+/* player: windowed by default, fullscreen on request */
+#pl{position:fixed;inset:0;background:rgba(5,10,20,.92);z-index:50;display:grid;place-items:center}
+#stage{--bh:calc(3.2rem + env(safe-area-inset-top,0px));position:relative;width:min(1100px,94vw);aspect-ratio:16/9;background:#000;border-radius:var(--r);overflow:hidden}
+#pl.fs{background:#000}
+#pl.fs #stage{width:100%;height:100%;aspect-ratio:auto;border-radius:0}
+#stage video,#stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+#pl .bar{position:absolute;left:0;right:0;top:0;padding:.6rem 1rem;display:flex;gap:1rem;align-items:center;background:linear-gradient(rgba(0,0,0,.75),transparent);transition:opacity .3s;pointer-events:none;z-index:2}
+#pl.fs .bar{padding-top:calc(.6rem + env(safe-area-inset-top,0px))}
 #pl .bar button{pointer-events:auto}
+#pl .grow{flex:1}
 #pl.idle .bar{opacity:0}
 #pl.idle{cursor:none}
-#plErr{position:absolute;bottom:4.5rem;left:1rem;right:1rem;text-align:center;background:rgba(0,0,0,.8);padding:.7rem;border-radius:var(--r);color:#ff8a98}
+#pl.yt .bar{height:var(--bh);background:#000;pointer-events:auto}
+#pl.yt.idle .bar{opacity:1}
+#pl.yt iframe{top:var(--bh);height:calc(100% - var(--bh))}
+#plErr{position:absolute;bottom:4.5rem;left:1rem;right:1rem;text-align:center;background:rgba(0,0,0,.8);padding:.7rem;border-radius:var(--r);color:#ff8a98;z-index:2}
+#trailerY{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:0;opacity:0;transition:opacity .6s;pointer-events:none;background:#000}
+#trailerY.on{opacity:1}
 @media (max-width:560px){.split{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -167,8 +177,8 @@ main section{margin-bottom:2.4rem}
       <label><input type="radio" name="src" value="link" checked> Video link</label>
       <label><input type="radio" name="src" value="local"> From this device</label>
     </div>
-    <div id="linkWrap"><label for="fLink">Direct video link</label><input id="fLink" type="url" placeholder="https://example.com/movie.mp4">
-      <p class="note">Must point straight at a video file (.mp4, .webm). Page links like YouTube won’t play. Saved to your library.</p></div>
+    <div id="linkWrap"><label for="fLink">Video link</label><input id="fLink" type="url" placeholder="https://example.com/movie.mp4 or a YouTube link">
+      <p class="note">A direct video file (.mp4, .webm) or a YouTube link, handy for indie shows. Saved to your library.</p></div>
     <div id="fileWrap" class="hidden"><label for="fFile">Video file</label><input id="fFile" type="file" accept="video/*">
       <p class="note">Local files aren’t saved. They stay in your library until you reload or sign out.</p></div>
   </div>
@@ -185,7 +195,7 @@ main section{margin-bottom:2.4rem}
   <p class="note" id="posterNote">No poster? KitFlix tries to grab a frame, or makes a title card.</p>
   <label for="fLogo">Logo image (transparent PNG works best)</label><input id="fLogo" type="file" accept="image/*">
   <label for="fBack">Backdrop image (wide)</label><input id="fBack" type="file" accept="image/*">
-  <label for="fTrailer">Trailer link (direct video link)</label><input id="fTrailer" type="url" placeholder="https://example.com/trailer.mp4">
+  <label for="fTrailer">Trailer link (video file or YouTube)</label><input id="fTrailer" type="url" placeholder="https://example.com/trailer.mp4 or a YouTube link">
   <label for="fTrailerFile">Or trailer file from this device</label><input id="fTrailerFile" type="file" accept="video/*">
   <p class="note">The trailer plays quietly on the overview after 5 seconds. A link is saved; a local file lasts this session only.</p>
   <p class="err" id="addErr" role="alert"></p>
@@ -197,6 +207,7 @@ main section{margin-bottom:2.4rem}
   <div class="hero">
     <div class="heroImg" id="heroImg"></div>
     <video id="trailer" muted playsinline preload="none"></video>
+    <iframe id="trailerY" title="Trailer" tabindex="-1" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
     <button class="snd hidden" id="trSound">Sound on</button>
     <button class="xbtn" id="ovClose" aria-label="Close">✕</button>
     <div class="heroBody"><div id="ovLogo"></div><div class="meta" id="ovMeta"></div></div>
@@ -212,7 +223,7 @@ main section{margin-bottom:2.4rem}
     <div class="eps" id="eps"></div>
     <div class="addep hidden" id="addEp">
       <label for="eName">Add an episode</label>
-      <div class="split"><input id="eName" placeholder="Episode name"><input id="eLink" type="url" placeholder="Direct video link"></div>
+      <div class="split"><input id="eName" placeholder="Episode name"><input id="eLink" type="url" placeholder="Video or YouTube link"></div>
       <div class="split" style="margin-top:.5rem"><input id="eFile" type="file" accept="video/*" aria-label="Or choose a local file"><button class="btn ghost" id="eAdd">Add episode</button></div>
       <p class="note">A link is saved; a local file lasts this session only. A link wins if both are filled.</p>
       <p class="err" id="eErr" role="alert"></p>
@@ -230,11 +241,14 @@ main section{margin-bottom:2.4rem}
   <div class="row"><button class="btn" id="colDone">Done</button></div>
 </div></div>
 
-<!-- Fullscreen player -->
+<!-- Player -->
 <div id="pl" class="hidden">
-  <video id="player" controls playsinline></video>
-  <div class="bar"><button class="btn ghost" id="plBack">← Back</button><b id="plTitle"></b></div>
-  <div id="plErr" class="hidden" role="alert"></div>
+  <div id="stage">
+    <video id="player" controls playsinline></video>
+    <iframe id="yt" class="hidden" title="YouTube player" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    <div class="bar"><button class="btn ghost" id="plBack">← Back</button><b id="plTitle"></b><span class="grow"></span><button class="btn ghost" id="plFs">Fullscreen</button></div>
+    <div id="plErr" class="hidden" role="alert"></div>
+  </div>
 </div>
 
 <script>
@@ -516,15 +530,17 @@ $("addSave").onclick = async () => {
         if(!f){ err.textContent = "Choose a video file."; return; }
         ep.file = f;
       }
+      const yid = ep.link && ytId(ep.link), yImg = yid && (!pf || !bf) ? await ytImage(yid) : null;
       let thumb;
       if(pf) thumb = await shrink(pf, 600, "image/jpeg", .85);
+      else if(yid) thumb = (yImg && await cropPoster(yImg)) || await placeholder(title);
       else {
         const tmp = ep.file ? URL.createObjectURL(ep.file) : null;
         thumb = await frameFrom(tmp || ep.link) || await placeholder(title);
         if(tmp) URL.revokeObjectURL(tmp);
       }
       const it = {id: uid(), owner: user.email, kind, ...fields, thumb, fav: false, added: Date.now(), episodes: [ep], trailerFile: tf || null,
-        logo: lf ? await shrink(lf, 800, "image/png") : null, backdrop: bf ? await shrink(bf, 1600, "image/jpeg", .85) : null};
+        logo: lf ? await shrink(lf, 800, "image/png") : null, backdrop: bf ? await shrink(bf, 1600, "image/jpeg", .85) : yImg};
       await persist(it); items.unshift(it); render(); $("addModal").classList.add("hidden");
     }
   }catch(e){ err.textContent = "Couldn’t save. Your browser may be out of storage space."; return; }
@@ -555,7 +571,7 @@ function drawOverview(){
   if(cur.kind === "show" || cur.episodes.length > 1) cur.episodes.forEach((ep, i) => {
     const b = document.createElement("button"); b.className = "ep";
     const n = document.createElement("span"); n.textContent = "▶ " + (i + 1) + ". " + ep.name;
-    const s = document.createElement("small"); s.textContent = ep.file ? "this session" : "saved";
+    const s = document.createElement("small"); s.textContent = ep.file ? "this session" : ytId(ep.link) ? "YouTube" : "saved";
     b.append(n, s); b.onclick = () => startPlay(i); box.appendChild(b);
   });
 }
@@ -580,10 +596,53 @@ $("eAdd").onclick = async () => {
   ["eName", "eLink", "eFile"].forEach(i => $(i).value = ""); err.textContent = ""; drawOverview();
 };
 
+/* ---------- YouTube helpers ---------- */
+function ytId(u){
+  try{
+    const x = new URL(u), h = x.hostname.replace(/^(www|m|music)\./, ""); let id = null;
+    if(h === "youtu.be") id = x.pathname.slice(1).split("/")[0];
+    else if(h === "youtube.com" || h === "youtube-nocookie.com"){
+      if(x.pathname === "/watch") id = x.searchParams.get("v");
+      else { const m = x.pathname.match(/^\/(embed|shorts|live|v)\/([^/?]+)/); if(m) id = m[2]; }
+    }
+    return id && /^[\w-]{11}$/.test(id) ? id : null;
+  }catch(e){ return null; }
+}
+const ytOrigin = location.protocol.startsWith("http") ? "&origin=" + encodeURIComponent(location.origin) : "";
+const ytSrc = (id, extra) => "https://www.youtube.com/embed/" + id + "?enablejsapi=1&rel=0&playsinline=1" + ytOrigin + extra;
+const ytPost = (f, o) => { try{ f.contentWindow.postMessage(JSON.stringify(o), "*"); }catch(e){} };
+const ytListen = f => ytPost(f, {event: "listening", id: 1});
+const ytEnded = d => (d.event === "onStateChange" && d.info === 0) || (d.event === "infoDelivery" && d.info && d.info.playerState === 0);
+const loadImg = src => new Promise(r => { const i = new Image(); i.crossOrigin = "anonymous"; i.onload = () => r(i); i.onerror = () => r(null); i.src = src; });
+async function ytImage(id){
+  for(const n of ["maxresdefault", "hqdefault"]){
+    const i = await loadImg("https://i.ytimg.com/vi/" + id + "/" + n + ".jpg");
+    if(i && i.naturalWidth >= 480){
+      try{
+        const s = Math.min(1, 1280 / i.naturalWidth), c = document.createElement("canvas");
+        c.width = Math.round(i.naturalWidth * s); c.height = Math.round(i.naturalHeight * s);
+        c.getContext("2d").drawImage(i, 0, 0, c.width, c.height);
+        return await new Promise(r => c.toBlob(r, "image/jpeg", .85));
+      }catch(e){}
+    }
+  }
+  return null;
+}
+async function cropPoster(b){
+  try{
+    const bm = await createImageBitmap(b), c = document.createElement("canvas"); c.width = 400; c.height = 600;
+    const s = Math.max(400 / bm.width, 600 / bm.height);
+    c.getContext("2d").drawImage(bm, (400 - bm.width * s) / 2, (600 - bm.height * s) / 2, bm.width * s, bm.height * s);
+    return await new Promise(r => c.toBlob(r, "image/jpeg", .85));
+  }catch(e){ return null; }
+}
+
 /* ---------- Trailer (autoplays after 5 seconds on the overview) ---------- */
-const tr = $("trailer"); let trT, trUrl = null;
+const tr = $("trailer"), trY = $("trailerY"); let trT, trUrl = null, trIsYt = false;
 function stopTrailer(){
-  clearTimeout(trT); tr.pause(); tr.classList.remove("on"); tr.removeAttribute("src"); tr.load();
+  clearTimeout(trT); trIsYt = false;
+  tr.pause(); tr.classList.remove("on"); tr.removeAttribute("src"); tr.load();
+  trY.classList.remove("on"); trY.removeAttribute("src");
   if(trUrl){ URL.revokeObjectURL(trUrl); trUrl = null; }
   $("trSound").classList.add("hidden");
 }
@@ -591,47 +650,90 @@ function armTrailer(){
   stopTrailer();
   if(!cur || (!cur.trailer && !cur.trailerFile)) return;
   trT = setTimeout(() => {
+    $("trSound").textContent = "Sound on";
+    const id = !cur.trailerFile && ytId(cur.trailer);
+    if(id){
+      const r = $("heroImg").getBoundingClientRect(), w = Math.max(r.width, r.height * 16 / 9);
+      trY.style.width = w + "px"; trY.style.height = (w * 9 / 16) + "px"; trIsYt = true;
+      trY.onload = () => {
+        if(!trIsYt) return;
+        ytListen(trY);
+        setTimeout(() => { if(trIsYt){ trY.classList.add("on"); $("trSound").classList.remove("hidden"); } }, 1200);
+      };
+      trY.src = ytSrc(id, "&autoplay=1&mute=1&controls=0&disablekb=1&modestbranding=1&iv_load_policy=3");
+      return;
+    }
     if(cur.trailerFile){ trUrl = URL.createObjectURL(cur.trailerFile); tr.src = trUrl; } else tr.src = cur.trailer;
-    tr.muted = true; $("trSound").textContent = "Sound on";
+    tr.muted = true;
     tr.play().then(() => { tr.classList.add("on"); $("trSound").classList.remove("hidden"); }).catch(stopTrailer);
   }, 5000);
 }
 tr.addEventListener("error", () => { if(tr.getAttribute("src")) stopTrailer(); });
 tr.addEventListener("ended", () => { tr.classList.remove("on"); $("trSound").classList.add("hidden"); });
-$("trSound").onclick = () => { tr.muted = !tr.muted; $("trSound").textContent = tr.muted ? "Sound on" : "Sound off"; };
+$("trSound").onclick = () => {
+  const on = $("trSound").textContent === "Sound on";
+  if(trIsYt) ytPost(trY, {event: "command", func: on ? "unMute" : "mute", args: []}); else tr.muted = !on;
+  $("trSound").textContent = on ? "Sound off" : "Sound on";
+};
 
-/* ---------- Fullscreen player ---------- */
-const pl = $("pl"), vid = $("player");
+/* ---------- Player (windowed, with fullscreen toggle) ---------- */
+const pl = $("pl"), vid = $("player"), yt = $("yt");
 let idleT;
-function wake(){ pl.classList.remove("idle"); clearTimeout(idleT); idleT = setTimeout(() => pl.classList.add("idle"), 2800); }
+function wake(){
+  pl.classList.remove("idle"); clearTimeout(idleT);
+  if(!pl.classList.contains("yt")) idleT = setTimeout(() => pl.classList.add("idle"), 2800);
+}
 ["mousemove", "touchstart", "keydown"].forEach(ev => pl.addEventListener(ev, wake));
 function setSrc(){
-  const ep = cur.episodes[curEp];
+  const ep = cur.episodes[curEp], id = ep.link && ytId(ep.link);
   if(playUrl){ URL.revokeObjectURL(playUrl); playUrl = null; }
   $("plErr").classList.add("hidden");
   $("plTitle").textContent = cur.kind === "show" ? cur.title + " · " + ep.name : cur.title;
-  if(ep.file){ playUrl = URL.createObjectURL(ep.file); vid.src = playUrl; } else vid.src = ep.link;
-  vid.play().catch(() => {});
+  vid.pause(); pl.classList.toggle("yt", !!id); vid.classList.toggle("hidden", !!id); yt.classList.toggle("hidden", !id);
+  if(id){
+    vid.removeAttribute("src"); vid.load();
+    yt.onload = () => ytListen(yt); yt.src = ytSrc(id, "&autoplay=1");
+  } else {
+    yt.removeAttribute("src");
+    if(ep.file){ playUrl = URL.createObjectURL(ep.file); vid.src = playUrl; } else vid.src = ep.link;
+    vid.play().catch(() => {});
+  }
+  wake();
 }
+const fsOn = () => document.fullscreenElement === pl;
+function syncFs(){ pl.classList.toggle("fs", fsOn()); $("plFs").textContent = fsOn() ? "Exit fullscreen" : "Fullscreen"; }
+function enterFs(){
+  if(pl.requestFullscreen){ pl.classList.add("fs"); pl.requestFullscreen().catch(syncFs); }
+  else if(vid.webkitEnterFullscreen && !pl.classList.contains("yt")) vid.webkitEnterFullscreen();
+}
+function exitFs(){ if(document.fullscreenElement) document.exitFullscreen().catch(() => {}); }
+$("plFs").onclick = () => fsOn() ? exitFs() : enterFs();
+document.addEventListener("fullscreenchange", syncFs);
 function startPlay(i){
-  stopTrailer(); curEp = i; pl.classList.remove("hidden"); setSrc(); wake();
-  const go = pl.requestFullscreen ? pl.requestFullscreen() : (vid.webkitEnterFullscreen && vid.webkitEnterFullscreen());
-  if(go && go.catch) go.catch(() => {});
+  stopTrailer(); curEp = i; pl.classList.remove("hidden"); setSrc(); enterFs();
 }
 function closePlay(){
   if(pl.classList.contains("hidden")) return;
-  pl.classList.add("hidden"); vid.pause(); vid.removeAttribute("src"); vid.load();
+  pl.classList.add("hidden"); vid.pause(); vid.removeAttribute("src"); vid.load(); yt.removeAttribute("src");
   if(playUrl){ URL.revokeObjectURL(playUrl); playUrl = null; }
-  if(document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  pl.classList.remove("yt", "fs"); exitFs();
   if(cur && !$("ovModal").classList.contains("hidden")) armTrailer();
 }
+function nextOrClose(){ if(curEp + 1 < cur.episodes.length){ curEp++; setSrc(); } else closePlay(); }
 $("plBack").onclick = closePlay;
-document.addEventListener("fullscreenchange", () => { if(!document.fullscreenElement) closePlay(); });
-vid.addEventListener("webkitendfullscreen", closePlay);
-vid.addEventListener("ended", () => { if(curEp + 1 < cur.episodes.length){ curEp++; setSrc(); } else closePlay(); });
+vid.addEventListener("ended", nextOrClose);
 vid.addEventListener("error", () => {
-  const e = $("plErr"); e.textContent = "This video couldn’t play. Check that the link points straight at a video file your browser supports (MP4 or WebM), and that the site allows playback from other sites.";
+  const e = $("plErr"); e.textContent = "This video couldn’t play. Use a link straight to a video file your browser supports (MP4 or WebM), or a YouTube link, and check the site allows playback from other sites.";
   e.classList.remove("hidden");
+});
+window.addEventListener("message", e => {
+  if(e.origin !== "https://www.youtube.com") return;
+  let d; try{ d = JSON.parse(e.data); }catch(x){ return; }
+  if(e.source === yt.contentWindow){ if(ytEnded(d)) nextOrClose(); }
+  else if(e.source === trY.contentWindow){
+    if(ytEnded(d)){ trY.classList.remove("on"); $("trSound").classList.add("hidden"); }
+    else if(d.event === "onError") stopTrailer();
+  }
 });
 document.addEventListener("keydown", e => {
   if(e.key !== "Escape") return;
