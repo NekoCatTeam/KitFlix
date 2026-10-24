@@ -10,10 +10,10 @@
 :root{--ink:#141414;--panel:#1f1f1f;--line:#3a3a3a;--paper:#f5f5f1;--mute:#a8a8a8;--red:#e50914;--redt:#ff6b73;--amber:#e50914;--velvet:#b20710;--r:6px;--pad:clamp(1rem,4vw,3.5rem)}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{background:var(--ink);color:var(--paper);font:400 16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+body{background:var(--ink);color:var(--paper);font:400 1rem/1.5 "Bricolage Grotesque",system-ui,sans-serif}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
-:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .logo{font-weight:800;font-size:1.7rem;letter-spacing:.03em;text-transform:uppercase;color:var(--red);display:inline-block}
 button.logo{background:none;border:0;padding:0}
 .btn{border:0;border-radius:var(--r);padding:.6rem 1.1rem;font-weight:600;background:#fff;color:#141414}
@@ -28,13 +28,26 @@ label{display:block;font-size:.9rem;color:var(--mute);margin:.9rem 0 .3rem}
 .err{color:#ff8a98;min-height:1.4em;font-size:.9rem;margin:.6rem 0 0}
 .note{font-size:.82rem;color:var(--mute);margin:.5rem 0 0}
 
-#auth{min-height:100vh;display:grid;place-items:center;padding:1.5rem;background:radial-gradient(ellipse at 20% 0%,rgba(229,9,20,.28),transparent 55%),var(--ink)}
-.card{background:rgba(0,0,0,.78);border-radius:10px;padding:2.2rem;width:100%;max-width:400px}
-.card h1{margin:.8rem 0 .2rem;font-size:1.5rem;letter-spacing:-.02em}
-.card p.sub{margin:0 0 1rem;color:var(--mute)}
-.card .btn{width:100%;margin-top:1rem}
-.switch{text-align:center;margin-top:1.2rem;color:var(--mute);font-size:.92rem}
-.switch button{background:none;border:0;color:var(--redt);text-decoration:underline;padding:0}
+/* ---- who's watching ---- */
+#profiles{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;padding:4.5rem 1rem 2rem;text-align:center;background:radial-gradient(ellipse at 20% 0%,rgba(229,9,20,.25),transparent 55%),var(--ink)}
+.pflogo{position:absolute;top:1.2rem;left:var(--pad)}
+#profiles h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:600;margin:0;letter-spacing:-.02em}
+.pfgrid{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(1rem,3vw,2.2rem);max-width:1000px}
+.pf{background:none;border:0;color:#8c8c8c;width:clamp(96px,16vw,170px);text-align:center;padding:0}
+.pf .av{width:100%;aspect-ratio:1;border-radius:8px;border:3px solid transparent;transition:transform .15s,border-color .15s}
+.pf:hover,.pf:focus-visible{color:#fff;outline:none}
+.pf:hover .av,.pf:focus-visible .av{border-color:#fff;transform:scale(1.06)}
+.pf .n{display:block;margin-top:.6rem;font-size:clamp(.95rem,1.6vw,1.25rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pf.add .av{background:#2a2a2a;font-size:3.2rem;color:#999}
+.pf.edit .av::after{content:"✎";position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);color:#fff;font-size:2.4rem}
+.av{display:grid;place-items:center;font-size:clamp(2.6rem,6vw,5rem);background-size:cover;background-position:center;overflow:hidden;position:relative}
+.av.big{width:84px;height:84px;font-size:2.6rem;border-radius:8px;flex:none}
+.presets{display:flex;flex-wrap:wrap;gap:.6rem}
+.presets button{width:52px;height:52px;border-radius:8px;border:3px solid transparent;font-size:1.6rem;display:grid;place-items:center;padding:0}
+.presets button[aria-pressed=true]{border-color:#fff}
+.pfedit{display:flex;gap:1rem;align-items:flex-end}
+.pfedit>div:last-child{flex:1}
+.avatar{font-size:1.15rem;background-size:cover;background-position:center;overflow:hidden;padding:0;display:grid;place-items:center}
 
 /* ---- top nav ---- */
 #nav{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;gap:1.4rem;padding:.8rem var(--pad);padding-top:calc(.8rem + env(safe-area-inset-top,0px));background:linear-gradient(rgba(0,0,0,.9),transparent);transition:background .3s}
@@ -195,25 +208,44 @@ body.mpOn .modal{padding-bottom:6rem}
 #gm iframe{background:#000}
 .gnote{display:flex;gap:.8rem;align-items:center;padding:.4rem 1rem;background:var(--panel);font-size:.85rem;color:var(--mute)}
 .gnote button{margin-left:auto;background:none;border:0;color:var(--redt);white-space:nowrap}
+/* focus ring: remote and keyboard friendly */
+.movie:focus-visible{outline:4px solid #fff;outline-offset:2px;transform:scale(1.1);z-index:4}
+.links button:focus-visible{outline:none;border-bottom:3px solid #fff}
+#pl .bar{overflow-x:auto;scrollbar-width:none}
+#pl .bar .btn{padding:.35rem .7rem;font-size:.85rem;white-space:nowrap;text-decoration:none;display:inline-block}
+@media (max-width:640px){#pl .bar b{display:none}}
+/* TV mode: bigger everything, no hover-only controls */
+html.tv{font-size:21px}
+html.tv .movie{width:clamp(180px,16vw,300px)}
+html.tv .grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+html.tv .bill{min-height:88vh}
+html.tv .bill .in{max-width:900px}
+html.tv .links{gap:1.6rem}
+html.tv .arr,html.tv .qa{display:none}
+html.tv .rowhead .more{display:none}
 @media (max-width:560px){.split{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 
-<section id="auth" class="hidden">
-  <div class="card">
-    <span class="logo">KitFlix</span>
-    <h1 id="authTitle">Sign in</h1>
-    <p class="sub">Your library, saved to your account.</p>
-    <div id="nameWrap" class="hidden"><label for="aName">Display name</label><input id="aName" autocomplete="nickname"></div>
-    <label for="aEmail">Email</label><input id="aEmail" type="email" autocomplete="email">
-    <label for="aPass">Password</label><input id="aPass" type="password" autocomplete="current-password">
-    <p class="err" id="authErr" role="alert"></p>
-    <button class="btn" id="authGo">Sign in</button>
-    <p class="switch"><span id="swText">New here?</span> <button id="swBtn" type="button">Create an account</button></p>
-  </div>
+<section id="profiles" class="hidden">
+  <span class="logo pflogo">KitFlix</span>
+  <h1 id="pfTitle">Who’s watching?</h1>
+  <div class="pfgrid" id="pfGrid"></div>
+  <button class="btn ghost" id="pfManage">Manage profiles</button>
 </section>
+
+<!-- Profile editor -->
+<div id="pfModal" class="modal hidden"><div class="sheet">
+  <h3 id="pfHead">Add profile</h3>
+  <div class="pfedit"><div class="av big" id="pfPrev"></div><div><label for="pfName">Name</label><input id="pfName" maxlength="24" autocomplete="off"></div></div>
+  <label>Profile picture</label>
+  <div class="presets" id="pfPresets" role="group" aria-label="Choose a picture"></div>
+  <label for="pfFile">Or upload your own</label><input id="pfFile" type="file" accept="image/*">
+  <p class="err" id="pfErr" role="alert"></p>
+  <div class="row"><button class="btn danger hidden" id="pfDel" style="margin-right:auto">Delete profile</button><button class="btn ghost" id="pfCancel">Cancel</button><button class="btn red" id="pfSave">Save</button></div>
+</div></div>
 
 <section id="app" class="hidden">
   <nav id="nav">
@@ -233,7 +265,7 @@ body.mpOn .modal{padding-bottom:6rem}
     <button class="btn red" id="addBtn">+ Add title</button>
     <div class="acct">
       <button class="avatar" id="acctBtn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu"></button>
-      <div class="menu hidden" id="acctMenu"><p id="who"></p><button class="btn ghost" id="outBtn">Sign out</button></div>
+      <div class="menu hidden" id="acctMenu"><p id="who"></p><button class="btn ghost" id="editBtn" style="margin-bottom:.5rem">Edit profile</button><button class="btn ghost" id="tvBtn" style="margin-bottom:.5rem">TV mode: off</button><button class="btn ghost" id="outBtn">Switch profile</button></div>
     </div>
   </nav>
   <main id="main"></main>
@@ -311,7 +343,7 @@ body.mpOn .modal{padding-bottom:6rem}
     <div class="eps" id="eps"></div>
     <div class="addep hidden" id="addEp">
       <label for="eName" id="addEpLbl">Add an episode</label>
-      <div class="split"><input id="eName" placeholder="Episode name"><input id="eLink" type="url" placeholder="Video or YouTube link"></div>
+      <div class="split"><input id="eName" placeholder="Episode name"><input id="eLink" type="url" placeholder="Any video link or page"></div>
       <div class="split" style="margin-top:.5rem"><input id="eFile" type="file" accept="video/*" aria-label="Or choose local files"><button class="btn ghost" id="eAdd">Add episode</button></div>
       <label class="inl"><input type="checkbox" id="eKeep"> Keep a copy of local files in this browser</label>
       <p class="note">A link is saved. Local files last this session unless you tick the box. A link wins if both are filled.</p>
@@ -357,7 +389,7 @@ body.mpOn .modal{padding-bottom:6rem}
   <div id="stage">
     <video id="player" controls playsinline></video>
     <iframe id="yt" class="hidden" title="YouTube player" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
-    <div class="bar"><button class="btn ghost" id="plBack">← Back</button><b id="plTitle"></b><span class="grow"></span><button class="btn ghost" id="plFs">Fullscreen</button></div>
+    <div class="bar"><button class="btn ghost" id="plBack">← Back</button><b id="plTitle"></b><span class="grow"></span><button class="btn ghost hidden" id="plPrev">‹ Prev</button><button class="btn ghost hidden" id="plNext">Next ›</button><button class="btn ghost" id="plFs">Fullscreen</button><a class="btn ghost hidden" id="plOpen" target="_blank" rel="noopener">Open in new tab</a></div>
     <div id="plErr" class="hidden" role="alert"></div>
   </div>
 </div>
@@ -391,6 +423,8 @@ const getItems = o => tx("movies", "readonly", s => s.index("owner").getAll(o));
 const putItem = m => tx("movies", "readwrite", s => s.put(m));
 const delItem = id => tx("movies", "readwrite", s => s.delete(id));
 const saveUser = () => putUser(user);
+const getAllUsers = () => tx("users", "readonly", s => s.getAll());
+const delUser = id => tx("users", "readwrite", s => s.delete(id));
 
 /* Links are always saved. Local files are saved only if "keep" was ticked. Albums are always saved. */
 const KLABEL = {movie: "Movie", show: "Show", book: "Book", song: "Song", album: "Album", game: "Game"};
@@ -409,49 +443,111 @@ function fmtDur(sec, short){
   return short ? Math.floor(sec / 60) + ":" + String(s).padStart(2, "0") : (h ? h + "h " + m + "m" : Math.max(1, m) + "m");
 }
 
-/* ---------- Passwords ---------- */
-const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
-async function hash(pw, salt){
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
-  return hex(await crypto.subtle.deriveBits({name: "PBKDF2", salt: new TextEncoder().encode(salt), iterations: 150000, hash: "SHA-256"}, key, 256));
-}
-
-/* ---------- Auth ---------- */
-function setMode(m){
-  mode = m;
-  $("authTitle").textContent = m === "in" ? "Sign in" : "Create your account";
-  $("authGo").textContent = m === "in" ? "Sign in" : "Create account";
-  $("nameWrap").classList.toggle("hidden", m === "in");
-  $("swText").textContent = m === "in" ? "New here?" : "Already have an account?";
-  $("swBtn").textContent = m === "in" ? "Create an account" : "Sign in";
-  $("aPass").autocomplete = m === "in" ? "current-password" : "new-password";
-  $("authErr").textContent = "";
-}
-$("swBtn").onclick = () => setMode(mode === "in" ? "up" : "in");
-$("authGo").onclick = async () => {
-  const email = $("aEmail").value.trim().toLowerCase(), pw = $("aPass").value, err = $("authErr");
-  err.textContent = "";
-  if(!/^\S+@\S+\.\S+$/.test(email)) return err.textContent = "Enter a valid email address.";
-  if(pw.length < 6) return err.textContent = "Use a password with at least 6 characters.";
-  const existing = await getUser(email);
-  if(mode === "up"){
-    if(existing) return err.textContent = "That email already has an account. Sign in instead.";
-    const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
-    const u = {email, name: $("aName").value.trim() || email.split("@")[0], salt, hash: await hash(pw, salt), collections: []};
-    await putUser(u); login(u);
+/* ---------- Profiles ("Who's watching?") ---------- */
+/* A profile is stored in the "users" store. Its id lives in the "email" field (older accounts keep their email there). */
+const PRESETS = [
+  {id: "hog", bg: "linear-gradient(135deg,#1e5bd6,#0b2a6b)", e: "🦔"}, {id: "fox", bg: "linear-gradient(135deg,#f08a24,#a14b05)", e: "🦊"},
+  {id: "panda", bg: "linear-gradient(135deg,#4b5563,#1f2937)", e: "🐼"}, {id: "octo", bg: "linear-gradient(135deg,#a64ac9,#4c1d6b)", e: "🐙"},
+  {id: "frog", bg: "linear-gradient(135deg,#34a853,#14532d)", e: "🐸"}, {id: "cat", bg: "linear-gradient(135deg,#e5484d,#7a1218)", e: "🐱"},
+  {id: "robot", bg: "linear-gradient(135deg,#14b8c4,#0b5560)", e: "🤖"}, {id: "alien", bg: "linear-gradient(135deg,#84cc16,#3f6212)", e: "👾"},
+  {id: "uni", bg: "linear-gradient(135deg,#ec6fb0,#9d2f78)", e: "🦄"}, {id: "game", bg: "linear-gradient(135deg,#eab308,#854d0e)", e: "🎮"}
+];
+let avUrls = [], pf = null, pfDraft = null, managing = false, profList = [];
+const hashStr = t => [...t].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+function paintAv(node, avatar, key){
+  node.textContent = "";
+  if(avatar && avatar.blob){
+    const u = URL.createObjectURL(avatar.blob); avUrls.push(u);
+    node.style.background = "#222"; node.style.backgroundImage = "url(" + u + ")"; node.style.backgroundSize = "cover"; node.style.backgroundPosition = "center";
   } else {
-    if(!existing) return err.textContent = "No account found for that email.";
-    if(await hash(pw, existing.salt) !== existing.hash) return err.textContent = "Wrong password. Try again.";
-    login(existing);
+    const pr = (avatar && PRESETS.find(x => x.id === avatar.id)) || PRESETS[hashStr(String(key)) % PRESETS.length];
+    node.style.background = pr.bg; node.textContent = pr.e;
   }
+}
+const paintNavAvatar = () => paintAv($("acctBtn"), user.avatar, user.email);
+const sortedUsers = async () => (await getAllUsers()).sort((a, b) => (a.created || 0) - (b.created || 0));
+
+async function showProfiles(){
+  $("app").classList.add("hidden"); $("profiles").classList.remove("hidden");
+  profList = await sortedUsers(); drawProfiles();
+  if(!profList.length) openProfileEditor(null); else { const f = document.querySelector(".pf"); if(f) f.focus({preventScroll: true}); }
+}
+function drawProfiles(){
+  avUrls.forEach(URL.revokeObjectURL); avUrls.length = 0;
+  $("pfTitle").textContent = managing ? "Manage Profiles" : "Who’s watching?";
+  $("pfManage").textContent = managing ? "Done" : "Manage profiles";
+  $("pfManage").classList.toggle("hidden", !profList.length);
+  const g = $("pfGrid"); g.innerHTML = "";
+  profList.forEach(p => {
+    const b = document.createElement("button"); b.className = "pf" + (managing ? " edit" : "");
+    const a = document.createElement("div"); a.className = "av"; paintAv(a, p.avatar, p.email);
+    const n = document.createElement("span"); n.className = "n"; n.textContent = p.name;
+    b.append(a, n); b.onclick = () => managing ? openProfileEditor(p) : enterProfile(p); g.appendChild(b);
+  });
+  const add = document.createElement("button"); add.className = "pf add";
+  add.innerHTML = '<div class="av">+</div><span class="n">Add profile</span>'; add.onclick = () => openProfileEditor(null); g.appendChild(add);
+}
+function enterProfile(p){ user = p; user.collections = user.collections || []; showApp(); }
+$("pfManage").onclick = () => { managing = !managing; drawProfiles(); };
+
+function switchProfile(){
+  stopTrailer(); closePlay(); closeMusic(); closeReader(); closeGame();
+  ["ovModal", "addModal", "colModal", "pfModal"].forEach(i => $(i).classList.add("hidden"));
+  urls.forEach(URL.revokeObjectURL); urls.length = 0;
+  $("acctMenu").classList.add("hidden"); user = null; items = []; viewCol = null; filter = "all"; managing = false;
+  showProfiles();
+}
+$("outBtn").onclick = switchProfile;
+$("editBtn").onclick = () => { $("acctMenu").classList.add("hidden"); openProfileEditor(user); };
+
+/* profile editor */
+async function squareAvatar(file){
+  try{
+    const b = await createImageBitmap(file), sz = Math.min(b.width, b.height), c = document.createElement("canvas"); c.width = c.height = 256;
+    c.getContext("2d").drawImage(b, (b.width - sz) / 2, (b.height - sz) / 2, sz, sz, 0, 0, 256, 256);
+    return await new Promise(r => c.toBlob(x => r(x || file), "image/jpeg", .88));
+  }catch(e){ return file; }
+}
+function drawPresets(){
+  const box = $("pfPresets"); box.innerHTML = "";
+  PRESETS.forEach(pr => {
+    const b = document.createElement("button"); b.textContent = pr.e; b.style.background = pr.bg; b.setAttribute("aria-label", "Picture " + pr.id);
+    b.setAttribute("aria-pressed", !!(pfDraft.avatar && !pfDraft.avatar.blob && pfDraft.avatar.id === pr.id));
+    b.onclick = () => { pfDraft.avatar = {type: "preset", id: pr.id}; $("pfFile").value = ""; drawPresets(); paintAv($("pfPrev"), pfDraft.avatar, "x"); };
+    box.appendChild(b);
+  });
+}
+function openProfileEditor(p){
+  pf = p; pfDraft = {avatar: p ? p.avatar : {type: "preset", id: PRESETS[Math.floor(Math.random() * PRESETS.length)].id}};
+  $("pfHead").textContent = p ? "Edit profile" : "Add profile";
+  $("pfName").value = p ? p.name : ""; $("pfFile").value = ""; $("pfErr").textContent = "";
+  $("pfDel").classList.toggle("hidden", !p);
+  drawPresets(); paintAv($("pfPrev"), pfDraft.avatar, p ? p.email : "new");
+  $("pfModal").classList.remove("hidden"); $("pfName").focus();
+}
+$("pfFile").onchange = async () => {
+  const f = $("pfFile").files[0]; if(!f) return;
+  pfDraft.avatar = {type: "image", blob: await squareAvatar(f)}; drawPresets(); paintAv($("pfPrev"), pfDraft.avatar, "x");
 };
-[$("aEmail"), $("aPass"), $("aName")].forEach(i => i.addEventListener("keydown", e => e.key === "Enter" && $("authGo").click()));
-function login(u){ user = u; user.collections = user.collections || []; localStorage.setItem("kitflix_session", u.email); $("aPass").value = ""; showApp(); }
-$("outBtn").onclick = () => {
-  localStorage.removeItem("kitflix_session"); user = null; items = []; viewCol = null; filter = "all"; $("acctMenu").classList.add("hidden");
-  urls.forEach(URL.revokeObjectURL); urls.length = 0; stopTrailer(); closePlay(); closeMusic(); closeReader(); closeGame();
-  ["ovModal", "addModal", "colModal"].forEach(i => $(i).classList.add("hidden"));
-  $("app").classList.add("hidden"); $("auth").classList.remove("hidden");
+$("pfCancel").onclick = () => $("pfModal").classList.add("hidden");
+$("pfName").addEventListener("keydown", e => { if(e.key === "Enter") $("pfSave").click(); });
+$("pfSave").onclick = async () => {
+  const name = $("pfName").value.trim(), err = $("pfErr");
+  if(!name) return err.textContent = "Enter a name.";
+  try{
+    if(pf){ pf.name = name; pf.avatar = pfDraft.avatar; await putUser(pf); }
+    else { const np = {email: "p-" + uid(), name, avatar: pfDraft.avatar, collections: [], created: Date.now()}; await putUser(np); pf = np; }
+  }catch(e){ err.textContent = "Couldn’t save this profile. Your browser may be out of storage space."; return; }
+  $("pfModal").classList.add("hidden");
+  if(user && pf === user){ $("who").textContent = user.name; paintNavAvatar(); }
+  else { profList = await sortedUsers(); drawProfiles(); }
+};
+$("pfDel").onclick = async () => {
+  if(!pf || !confirm("Delete “" + pf.name + "”? Its library and collections will be removed from this browser.")) return;
+  const gone = pf, mine = user && gone === user;
+  for(const m of await getItems(gone.email)) await delItem(m.id);
+  await delUser(gone.email); $("pfModal").classList.add("hidden");
+  if(mine) switchProfile(); else { profList = await sortedUsers(); if(!profList.length) managing = false; drawProfiles(); }
 };
 
 /* ---------- Library ---------- */
@@ -462,10 +558,11 @@ function pickHero(){
   heroId = pool.length ? pool[Math.floor(Math.random() * pool.length)].id : null;
 }
 async function showApp(){
-  $("auth").classList.add("hidden"); $("app").classList.remove("hidden");
-  $("who").textContent = user.name + " (" + user.email + ")"; $("acctBtn").textContent = (user.name || "?").trim().charAt(0).toUpperCase();
+  $("profiles").classList.add("hidden"); $("app").classList.remove("hidden");
+  $("who").textContent = user.name; paintNavAvatar();
   items = (await getItems(user.email)).filter(m => m.episodes).sort((a, b) => b.added - a.added);
   filter = "all"; viewCol = null; $("search").value = ""; pickHero(); render();
+  if(document.documentElement.classList.contains("tv")){ const f = document.querySelector(".bill .btn") || document.querySelector(".links button"); if(f) f.focus({preventScroll: true}); }
 }
 function go(f){ filter = f; viewCol = null; $("search").value = ""; render(); scrollTo(0, 0); }
 document.querySelectorAll("#links button").forEach(b => b.onclick = () => go(b.dataset.f));
@@ -489,7 +586,7 @@ function qbtn(txt, label, primary, fn){
 }
 function quickPlay(m){ cur = m; if(m.episodes.length) playItem(0); else openOverview(m); }
 function card(m){
-  const d = document.createElement("div"); d.className = "movie"; d.tabIndex = 0; d.setAttribute("role", "button"); d.setAttribute("aria-label", m.title + ", more info");
+  const d = document.createElement("div"); d.className = "movie"; d.dataset.id = m.id; d.tabIndex = 0; d.setAttribute("role", "button"); d.setAttribute("aria-label", m.title + ", more info");
   const u = URL.createObjectURL(m.thumb); urls.push(u);
   d.innerHTML = '<div class="poster"><img alt=""><span class="badge"></span><div class="qa"></div></div><div class="cap"><b></b><small></small></div>';
   if(sqKind(m)) d.querySelector(".poster").classList.add("sq");
@@ -681,7 +778,7 @@ const validLink = s => { try{ return /^https?:$/.test(new URL(s).protocol); }cat
 
 /* ---------- Add / edit ---------- */
 const KINDS = {
-  movie: {link: "Video link", ph: "https://example.com/movie.mp4 or a YouTube link", note: "A direct video file (.mp4, .webm) or a YouTube link, handy for indie shows. Saved to your library.", file: "Video file", acc: "video/*", by: "", len: "Length"},
+  movie: {link: "Video link", ph: "Any link: a video file, YouTube, or a page", note: "Any link works: a direct video file (.mp4, .webm), YouTube, or a page that hosts the video. Pages play inside KitFlix; if a site refuses to be embedded, use Open in new tab on the player. Saved to your library.", file: "Video file", acc: "video/*", by: "", len: "Length"},
   book: {link: "PDF link", ph: "https://example.com/book.pdf", note: "A direct link to a PDF file. Saved to your library.", file: "PDF file", acc: "application/pdf,.pdf", by: "Author", len: "Pages"},
   song: {link: "MP3 link", ph: "https://example.com/song.mp3", note: "A direct link to an MP3 or other audio file. Saved to your library.", file: "MP3 file", acc: "audio/*,.mp3", by: "Artist", len: "Duration"},
   album: {by: "Artist", len: ""},
@@ -781,7 +878,7 @@ $("addSave").onclick = async () => {
       let thumb;
       if(pf) thumb = await shrink(pf, 600, "image/jpeg", .85);
       else if(yid) thumb = (yImg && await cropPoster(yImg)) || await placeholder(title, kind);
-      else if(vk){
+      else if(vk && (ep.file || isVideoLink(ep.link))){
         const tmp = ep.file ? URL.createObjectURL(ep.file) : null;
         thumb = await frameFrom(tmp || ep.link) || await placeholder(title, kind);
         if(tmp) URL.revokeObjectURL(tmp);
@@ -799,8 +896,9 @@ $("addSave").onclick = async () => {
 /* ---------- Overview ---------- */
 function openOverview(m){
   cur = m; $("eErr").textContent = ""; $("ovModal").classList.remove("hidden"); drawOverview(); armTrailer();
+  ($("ovPlay").classList.contains("hidden") ? $("ovClose") : $("ovPlay")).focus({preventScroll: true});
 }
-const epTag = ep => ep.file ? (ep.keep ? "on this device" : "this session") : ytId(ep.link) ? "YouTube" : "saved";
+const epTag = ep => ep.file ? (ep.keep ? "on this device" : "this session") : ytId(ep.link) ? "YouTube" : isVideoLink(ep.link) ? "saved" : "web link";
 function drawOverview(){
   ovUrls.forEach(URL.revokeObjectURL); ovUrls.length = 0;
   const u = b => { const x = URL.createObjectURL(b); ovUrls.push(x); return x; };
@@ -823,7 +921,7 @@ function drawOverview(){
   $("addEpLbl").textContent = album ? "Add songs" : "Add an episode";
   $("eAdd").textContent = album ? "Add song(s)" : "Add episode";
   $("eName").placeholder = album ? "Song name (optional)" : "Episode name";
-  $("eLink").placeholder = album ? "MP3 link" : "Video or YouTube link";
+  $("eLink").placeholder = album ? "MP3 link" : "Any video link or page";
   $("eFile").accept = album ? "audio/*,.mp3" : "video/*"; $("eFile").multiple = album;
   const box = $("eps"); box.innerHTML = "";
   if(album && !n){ const p = document.createElement("p"); p.className = "note"; p.textContent = "No songs yet. Add one below, or add several MP3 files at once."; box.appendChild(p); }
@@ -842,7 +940,11 @@ function playItem(i){
   const k = cur.kind;
   if(k === "book") openReader(); else if(k === "game") openGame(); else if(k === "song" || k === "album") startMusic(i); else startPlay(i);
 }
-function closeOverview(){ stopTrailer(); ovUrls.forEach(URL.revokeObjectURL); ovUrls.length = 0; $("ovModal").classList.add("hidden"); render(); }
+function closeOverview(){
+  stopTrailer(); ovUrls.forEach(URL.revokeObjectURL); ovUrls.length = 0; $("ovModal").classList.add("hidden");
+  const id = cur && cur.id; render();
+  const c = id && document.querySelector('.movie[data-id="' + id + '"]'); if(c) c.focus({preventScroll: true});
+}
 $("ovClose").onclick = closeOverview;
 $("ovPlay").onclick = () => playItem(0);
 $("ovEdit").onclick = () => openAdd(cur);
@@ -908,6 +1010,18 @@ async function cropPoster(b){
   }catch(e){ return null; }
 }
 
+/* ---------- Any-link support: file, YouTube, or an embeddable page ---------- */
+const isVideoLink = l => /\.(mp4|m4v|webm|ogv|mov)(?:$|[?#])/i.test(l);
+const linkMode = l => ytId(l) ? "yt" : isVideoLink(l) ? "file" : "web";
+function embedUrl(link){
+  try{
+    const x = new URL(link), h = x.hostname.replace(/^www\./, "");
+    if(h === "vimeo.com"){ const m = x.pathname.match(/^\/(\d+)/); if(m) return "https://player.vimeo.com/video/" + m[1]; }
+    if(h === "dailymotion.com"){ const m = x.pathname.match(/^\/video\/([^/?_]+)/); if(m) return "https://www.dailymotion.com/embed/video/" + m[1]; }
+  }catch(e){}
+  return link;
+}
+
 /* ---------- Trailer (autoplays after 5 seconds on the overview) ---------- */
 const tr = $("trailer"), trY = $("trailerY"); let trT, trUrl = null, trIsYt = false;
 function stopTrailer(){
@@ -956,14 +1070,19 @@ function wake(){
 }
 ["mousemove", "touchstart", "keydown"].forEach(ev => pl.addEventListener(ev, wake));
 function setSrc(){
-  const ep = cur.episodes[curEp], id = ep.link && ytId(ep.link);
+  const ep = cur.episodes[curEp], mode = ep.file ? "file" : linkMode(ep.link), frame = mode !== "file";
   if(playUrl){ URL.revokeObjectURL(playUrl); playUrl = null; }
   $("plErr").classList.add("hidden");
   $("plTitle").textContent = cur.kind === "show" ? cur.title + " · " + ep.name : cur.title;
-  vid.pause(); pl.classList.toggle("yt", !!id); vid.classList.toggle("hidden", !!id); yt.classList.toggle("hidden", !id);
-  if(id){
+  vid.pause(); pl.classList.toggle("yt", frame); vid.classList.toggle("hidden", frame); yt.classList.toggle("hidden", !frame);
+  $("plOpen").classList.toggle("hidden", !frame); if(frame) $("plOpen").href = ep.link;
+  const multi = cur.episodes.length > 1;
+  $("plPrev").classList.toggle("hidden", !multi); $("plNext").classList.toggle("hidden", !multi);
+  $("plPrev").disabled = curEp === 0; $("plNext").disabled = curEp >= cur.episodes.length - 1;
+  if(frame){
     vid.removeAttribute("src"); vid.load();
-    yt.onload = () => ytListen(yt); yt.src = ytSrc(id, "&autoplay=1");
+    if(mode === "yt"){ yt.onload = () => ytListen(yt); yt.src = ytSrc(ytId(ep.link), "&autoplay=1"); }
+    else { yt.onload = () => yt.focus(); yt.src = embedUrl(ep.link); }
   } else {
     yt.src = "about:blank";
     if(ep.file){ playUrl = URL.createObjectURL(ep.file); vid.src = playUrl; } else vid.src = ep.link;
@@ -991,10 +1110,12 @@ function closePlay(){
   if(cur && !$("ovModal").classList.contains("hidden")) armTrailer();
 }
 function nextOrClose(){ if(curEp + 1 < cur.episodes.length){ curEp++; setSrc(); } else closePlay(); }
+function stepEp(d){ const n = curEp + d; if(n < 0 || n >= cur.episodes.length) return; curEp = n; setSrc(); }
+$("plPrev").onclick = () => stepEp(-1); $("plNext").onclick = () => stepEp(1);
 $("plBack").onclick = closePlay;
 vid.addEventListener("ended", nextOrClose);
 vid.addEventListener("error", () => {
-  const e = $("plErr"); e.textContent = "This video couldn’t play. Use a link straight to a video file your browser supports (MP4 or WebM), or a YouTube link, and check the site allows playback from other sites.";
+  const e = $("plErr"); e.textContent = "This video couldn’t play. The file may be in a format your browser doesn’t support, or the site may block playback from other sites. Try Fullscreen off and Open in new tab, or use an MP4/WebM link.";
   e.classList.remove("hidden");
 });
 window.addEventListener("message", e => {
@@ -1007,10 +1128,11 @@ window.addEventListener("message", e => {
   }
 });
 document.addEventListener("keydown", e => {
-  if(e.key !== "Escape") return;
+  if(e.key !== "Escape" && !(e.key === "Backspace" && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))) return;
   if(!pl.classList.contains("hidden")) return closePlay();
   if(!$("rd").classList.contains("hidden")) return closeReader();
-  for(const id of ["colModal", "addModal", "ovModal"]){
+  if(!$("gm").classList.contains("hidden")) return;
+  for(const id of ["pfModal", "colModal", "addModal", "ovModal"]){
     if(!$(id).classList.contains("hidden")){ id === "ovModal" ? closeOverview() : id === "addModal" ? closeAdd() : $(id).classList.add("hidden"); if(id === "colModal") render(); return; }
   }
 });
@@ -1081,11 +1203,62 @@ function closeReader(){
 }
 $("rdBack").onclick = closeReader;
 
+/* ---------- Remote / keyboard navigation (arrow keys, like a TV remote) ---------- */
+const FOCUSABLE = 'button, a[href], input, select, textarea, [tabindex="0"]';
+function navLayer(){
+  if(["pl", "rd", "gm"].some(id => !$(id).classList.contains("hidden"))) return null;
+  const open = [...document.querySelectorAll(".modal")].filter(m => !m.classList.contains("hidden"));
+  return open.length ? open[open.length - 1] : document.body;
+}
+function focusEl(e){
+  e.focus({preventScroll: true});
+  if(e.closest("#nav")) scrollTo({top: 0, behavior: "smooth"});
+  else e.scrollIntoView({block: "center", inline: "center", behavior: "smooth"});
+}
+function spatial(dir){
+  const layer = navLayer(); if(!layer) return false;
+  const all = [...layer.querySelectorAll(FOCUSABLE)].filter(e => !e.disabled && e.getClientRects().length && !e.matches(".qb, .more, .arr") && e.type !== "hidden");
+  const a = document.activeElement, from = all.includes(a) ? a : null;
+  if(!from){
+    const vis = all.find(e => { const b = e.getBoundingClientRect(); return b.top >= 0 && b.bottom <= innerHeight && b.left >= 0 && b.right <= innerWidth; }) || all[0];
+    if(vis){ focusEl(vis); return true; } return false;
+  }
+  const r = from.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, horiz = dir === "ArrowLeft" || dir === "ArrowRight";
+  let best = null, bs = Infinity;
+  for(const e of all){
+    if(e === from) continue;
+    const b = e.getBoundingClientRect(), dx = b.left + b.width / 2 - cx, dy = b.top + b.height / 2 - cy;
+    if(dir === "ArrowRight" && dx <= 4) continue; if(dir === "ArrowLeft" && dx >= -4) continue;
+    if(dir === "ArrowDown" && dy <= 4) continue; if(dir === "ArrowUp" && dy >= -4) continue;
+    if(horiz && Math.abs(dy) > Math.max(r.height, b.height) * .6) continue;
+    const score = horiz ? Math.abs(dx) + Math.abs(dy) * 3 : Math.abs(dy) + Math.abs(dx) * 1.5;
+    if(score < bs){ bs = score; best = e; }
+  }
+  if(best){ focusEl(best); return true; }
+  return false;
+}
+document.addEventListener("keydown", e => {
+  if(e.altKey || e.ctrlKey || e.metaKey || !e.key.startsWith("Arrow")) return;
+  const t = e.target, tag = t.tagName;
+  if(tag === "TEXTAREA" || tag === "SELECT" || (tag === "INPUT" && t.type === "radio")) return;
+  const typing = tag === "INPUT" && !["checkbox", "button", "file"].includes(t.type);
+  if(typing && (e.key === "ArrowLeft" || e.key === "ArrowRight")) return;
+  if(spatial(e.key)) e.preventDefault();
+});
+function applyTv(on){
+  document.documentElement.classList.toggle("tv", on);
+  $("tvBtn").textContent = "TV mode: " + (on ? "on" : "off");
+  try{ localStorage.setItem("kitflix_tv", on ? "1" : "0"); }catch(e){}
+}
+$("tvBtn").onclick = () => applyTv(!document.documentElement.classList.contains("tv"));
+
 /* ---------- Boot ---------- */
 (async () => {
+  let tv = null; try{ tv = localStorage.getItem("kitflix_tv"); }catch(e){}
+  applyTv(tv === null ? /SmartTV|Tizen|Web0S|WebOS|AppleTV|CrKey|AFT|Roku|Silk/i.test(navigator.userAgent) : tv === "1");
   db = await openDB();
-  const s = localStorage.getItem("kitflix_session"), u = s && await getUser(s);
-  if(u){ login(u); } else $("auth").classList.remove("hidden");
+  try{ localStorage.removeItem("kitflix_session"); }catch(e){}
+  showProfiles();
 })();
 </script>
 </body>
