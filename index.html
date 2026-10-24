@@ -118,6 +118,29 @@ main section{margin-bottom:2.4rem}
 #plErr{position:absolute;bottom:4.5rem;left:1rem;right:1rem;text-align:center;background:rgba(0,0,0,.8);padding:.7rem;border-radius:var(--r);color:#ff8a98;z-index:2}
 #trailerY{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:0;opacity:0;transition:opacity .6s;pointer-events:none;background:#000}
 #trailerY.on{opacity:1}
+.poster.sq{aspect-ratio:1}
+.inl{display:flex;gap:.5rem;align-items:center;color:var(--paper);margin:.7rem 0 0}
+.inl input{width:auto}
+.ep{padding:0;gap:0;justify-content:flex-start;align-items:stretch}
+.ep .epPlay{flex:1;text-align:left;background:none;border:0;padding:.6rem .8rem;display:flex;justify-content:space-between;gap:1rem}
+.ep .epX{background:none;border:0;padding:0 .9rem;color:var(--mute)}
+.ep .epX:hover{color:#ff8a98}
+#mp{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--panel);border-top:1px solid var(--line);padding:.6rem 1rem calc(.6rem + env(safe-area-inset-bottom,0px));display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+#mp img{width:44px;height:44px;border-radius:6px;object-fit:cover}
+#mp .info{display:flex;gap:.7rem;align-items:center;min-width:160px;max-width:280px}
+#mp .info div{min-width:0}
+#mp .info b,#mp .info small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mp .info small{color:var(--mute)}
+#mp audio{flex:1;min-width:200px;height:36px}
+#mp .btn{padding:.35rem .8rem}
+#mp .btn:disabled{opacity:.4;cursor:default}
+body.mpOn{padding-bottom:5.5rem}
+body.mpOn .modal{padding-bottom:6rem}
+#rd{position:fixed;inset:0;z-index:50;background:var(--ink);display:flex;flex-direction:column}
+#rd .rbar{display:flex;gap:1rem;align-items:center;padding:.6rem 1rem;padding-top:calc(.6rem + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line)}
+#rd .grow{flex:1}
+#rd .btn{text-decoration:none;display:inline-block}
+#rd iframe{flex:1;border:0;width:100%;background:#fff}
 @media (max-width:560px){.split{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -161,6 +184,9 @@ main section{margin-bottom:2.4rem}
         <button data-f="all" aria-pressed="true">All</button>
         <button data-f="movie" aria-pressed="false">Movies</button>
         <button data-f="show" aria-pressed="false">Shows</button>
+        <button data-f="book" aria-pressed="false">Books</button>
+        <button data-f="music" aria-pressed="false">Music</button>
+        <button data-f="game" aria-pressed="false">Games</button>
       </div>
       <div id="grid" class="grid"></div>
     </section>
@@ -169,35 +195,51 @@ main section{margin-bottom:2.4rem}
 
 <!-- Add / edit -->
 <div id="addModal" class="modal hidden"><div class="sheet">
-  <h3 id="addHead">Add a movie or show</h3>
+  <h3 id="addHead">Add to your library</h3>
   <div id="newOnly">
     <label for="fKind">Type</label>
-    <select id="fKind"><option value="movie">Movie</option><option value="show">Show</option></select>
-    <div class="src" role="radiogroup" aria-label="Source">
-      <label><input type="radio" name="src" value="link" checked> Video link</label>
-      <label><input type="radio" name="src" value="local"> From this device</label>
+    <select id="fKind"><option value="movie">Movie</option><option value="show">Show</option><option value="book">Book (PDF)</option><option value="song">Song (MP3)</option><option value="album">Album</option><option value="game">Game (link)</option></select>
+    <div id="srcWrap">
+      <div class="src" id="srcRadios" role="radiogroup" aria-label="Source">
+        <label><input type="radio" name="src" value="link" checked> Link</label>
+        <label><input type="radio" name="src" value="local"> From this device</label>
+      </div>
+      <div id="linkWrap"><label for="fLink" id="linkLbl">Video link</label><input id="fLink" type="url">
+        <p class="note" id="linkNote"></p></div>
+      <div id="fileWrap" class="hidden"><label for="fFile" id="fileLbl">Video file</label><input id="fFile" type="file">
+        <label class="inl"><input type="checkbox" id="fKeep"> Keep a copy in this browser</label>
+        <p class="note">Files from your device aren’t saved by default and stay until you reload or sign out. Tick the box to keep a copy on this device (uses storage space).</p></div>
     </div>
-    <div id="linkWrap"><label for="fLink">Video link</label><input id="fLink" type="url" placeholder="https://example.com/movie.mp4 or a YouTube link">
-      <p class="note">A direct video file (.mp4, .webm) or a YouTube link, handy for indie shows. Saved to your library.</p></div>
-    <div id="fileWrap" class="hidden"><label for="fFile">Video file</label><input id="fFile" type="file" accept="video/*">
-      <p class="note">Local files aren’t saved. They stay in your library until you reload or sign out.</p></div>
+    <p class="note hidden" id="albumNote">Albums start empty. Open the album afterwards to add songs.</p>
   </div>
   <label for="fTitle">Title</label><input id="fTitle">
   <div id="epNameWrap" class="hidden"><label for="fEpName">First episode name</label><input id="fEpName" value="Episode 1"></div>
+  <div id="byWrap" class="hidden"><label for="fBy" id="byLbl">Author</label><input id="fBy"></div>
+  <div id="gLinkWrap" class="hidden"><label for="fGameLink">Game link</label><input id="fGameLink" type="url" placeholder="https://…"><p class="note">Any link works. It opens in a new tab when you press Play.</p></div>
+  <div id="cWrap" class="hidden"><label for="fConsole">Console or platform</label>
+    <select id="fConsole"><option value="">Not set</option>
+      <optgroup label="Nintendo"><option>NES</option><option>SNES</option><option>Nintendo 64</option><option>GameCube</option><option>Wii</option><option>Wii U</option><option>Switch</option><option>Game Boy</option><option>Game Boy Color</option><option>Game Boy Advance</option><option>Nintendo DS</option><option>Nintendo 3DS</option></optgroup>
+      <optgroup label="Sega"><option>Master System</option><option>Genesis / Mega Drive</option><option>Sega CD</option><option>Sega Saturn</option><option>Dreamcast</option><option>Game Gear</option></optgroup>
+      <optgroup label="Sony"><option>PlayStation</option><option>PlayStation 2</option><option>PlayStation 3</option><option>PlayStation 4</option><option>PlayStation 5</option><option>PSP</option><option>PS Vita</option></optgroup>
+      <optgroup label="Microsoft"><option>Xbox</option><option>Xbox 360</option><option>Xbox One</option><option>Xbox Series X|S</option></optgroup>
+      <optgroup label="Other"><option>Atari</option><option>Arcade</option><option>PC</option><option>Mobile</option><option>Browser</option><option>Other</option></optgroup>
+    </select></div>
   <label for="fDesc">Description</label><textarea id="fDesc" rows="3"></textarea>
   <div class="split">
-    <div><label for="fQuality">Video quality</label>
+    <div id="qWrap"><label for="fQuality">Video quality</label>
       <select id="fQuality"><option value="">Not set</option><option>SD</option><option>HD 720p</option><option>Full HD 1080p</option><option>4K UHD</option></select></div>
-    <div><label for="fLength">Length</label><input id="fLength" placeholder="e.g. 1h 52m"></div>
+    <div id="lenWrap"><label for="fLength" id="lenLbl">Length</label><input id="fLength"></div>
   </div>
-  <label for="fThumb">Poster image</label><input id="fThumb" type="file" accept="image/*">
-  <img id="thumbPrev" class="thumbprev hidden" alt="Poster preview">
-  <p class="note" id="posterNote">No poster? KitFlix tries to grab a frame, or makes a title card.</p>
+  <label for="fThumb">Poster or cover image</label><input id="fThumb" type="file" accept="image/*">
+  <img id="thumbPrev" class="thumbprev hidden" alt="Cover preview">
+  <p class="note" id="posterNote"></p>
   <label for="fLogo">Logo image (transparent PNG works best)</label><input id="fLogo" type="file" accept="image/*">
   <label for="fBack">Backdrop image (wide)</label><input id="fBack" type="file" accept="image/*">
-  <label for="fTrailer">Trailer link (video file or YouTube)</label><input id="fTrailer" type="url" placeholder="https://example.com/trailer.mp4 or a YouTube link">
-  <label for="fTrailerFile">Or trailer file from this device</label><input id="fTrailerFile" type="file" accept="video/*">
-  <p class="note">The trailer plays quietly on the overview after 5 seconds. A link is saved; a local file lasts this session only.</p>
+  <div id="trWrap">
+    <label for="fTrailer">Trailer link (video file or YouTube)</label><input id="fTrailer" type="url" placeholder="https://example.com/trailer.mp4 or a YouTube link">
+    <label for="fTrailerFile">Or trailer file from this device</label><input id="fTrailerFile" type="file" accept="video/*">
+    <p class="note">The trailer plays quietly on the overview after 5 seconds. A link is saved; a local file lasts this session only.</p>
+  </div>
   <p class="err" id="addErr" role="alert"></p>
   <div class="row"><button class="btn ghost" id="addCancel">Cancel</button><button class="btn" id="addSave">Add to library</button></div>
 </div></div>
@@ -222,10 +264,11 @@ main section{margin-bottom:2.4rem}
     <p class="desc" id="ovDesc"></p>
     <div class="eps" id="eps"></div>
     <div class="addep hidden" id="addEp">
-      <label for="eName">Add an episode</label>
+      <label for="eName" id="addEpLbl">Add an episode</label>
       <div class="split"><input id="eName" placeholder="Episode name"><input id="eLink" type="url" placeholder="Video or YouTube link"></div>
-      <div class="split" style="margin-top:.5rem"><input id="eFile" type="file" accept="video/*" aria-label="Or choose a local file"><button class="btn ghost" id="eAdd">Add episode</button></div>
-      <p class="note">A link is saved; a local file lasts this session only. A link wins if both are filled.</p>
+      <div class="split" style="margin-top:.5rem"><input id="eFile" type="file" accept="video/*" aria-label="Or choose local files"><button class="btn ghost" id="eAdd">Add episode</button></div>
+      <label class="inl"><input type="checkbox" id="eKeep"> Keep a copy of local files in this browser</label>
+      <p class="note">A link is saved. Local files last this session unless you tick the box. A link wins if both are filled.</p>
       <p class="err" id="eErr" role="alert"></p>
     </div>
     <div class="row"><button class="btn danger" id="ovDel">Remove from library</button></div>
@@ -240,6 +283,21 @@ main section{margin-bottom:2.4rem}
   <div class="split"><input id="colNew" placeholder="Name"><button class="btn ghost" id="colMake">Create and add</button></div>
   <div class="row"><button class="btn" id="colDone">Done</button></div>
 </div></div>
+
+<!-- Music player -->
+<div id="mp" class="hidden">
+  <div class="info"><img id="mpArt" alt=""><div><b id="mpTitle"></b><small id="mpSub"></small></div></div>
+  <button class="btn ghost" id="mpPrev">‹ Prev</button>
+  <audio id="aud" controls></audio>
+  <button class="btn ghost" id="mpNext">Next ›</button>
+  <button class="btn ghost" id="mpClose" aria-label="Close player">✕</button>
+</div>
+
+<!-- Book reader -->
+<div id="rd" class="hidden">
+  <div class="rbar"><button class="btn ghost" id="rdBack">← Back</button><b id="rdTitle"></b><span class="grow"></span><a class="btn ghost" id="rdOpen" target="_blank" rel="noopener">Open in new tab</a></div>
+  <iframe id="rdFrame" title="Book reader"></iframe>
+</div>
 
 <!-- Player -->
 <div id="pl" class="hidden">
@@ -281,14 +339,21 @@ const putItem = m => tx("movies", "readwrite", s => s.put(m));
 const delItem = id => tx("movies", "readwrite", s => s.delete(id));
 const saveUser = () => putUser(user);
 
-/* Only link episodes are saved. Local files stay in memory for this session. */
+/* Links are always saved. Local files are saved only if "keep" was ticked. Albums are always saved. */
+const KLABEL = {movie: "Movie", show: "Show", book: "Book", song: "Song", album: "Album", game: "Game"};
+const isSaved = it => it.kind === "album" || it.episodes.some(e => e.link || e.keep);
 async function persist(it){
-  const saved = it.episodes.filter(e => e.link);
-  if(saved.length){
-    await putItem({id: it.id, owner: it.owner, kind: it.kind, title: it.title, desc: it.desc, thumb: it.thumb, logo: it.logo, backdrop: it.backdrop,
+  const saved = it.episodes.filter(e => e.link || e.keep);
+  if(saved.length || it.kind === "album"){
+    await putItem({id: it.id, owner: it.owner, kind: it.kind, title: it.title, desc: it.desc, by: it.by || "", console: it.console || "", thumb: it.thumb, logo: it.logo, backdrop: it.backdrop,
       quality: it.quality, length: it.length, trailer: it.trailer || "", fav: it.fav, added: it.added,
-      episodes: saved.map(e => ({id: e.id, name: e.name, link: e.link}))});
+      episodes: saved.map(e => e.link ? {id: e.id, name: e.name, link: e.link} : {id: e.id, name: e.name, keep: true, file: e.file})});
   } else await delItem(it.id);
+}
+const cleanName = n => n.replace(/\.[^.]+$/, "").replace(/[._]+/g, " ").trim();
+function fmtDur(sec, short){
+  const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = Math.floor(sec % 60);
+  return short ? Math.floor(sec / 60) + ":" + String(s).padStart(2, "0") : (h ? h + "h " + m + "m" : Math.max(1, m) + "m");
 }
 
 /* ---------- Passwords ---------- */
@@ -331,7 +396,7 @@ $("authGo").onclick = async () => {
 function login(u){ user = u; user.collections = user.collections || []; localStorage.setItem("kitflix_session", u.email); $("aPass").value = ""; showApp(); }
 $("outBtn").onclick = () => {
   localStorage.removeItem("kitflix_session"); user = null; items = []; viewCol = null;
-  urls.forEach(URL.revokeObjectURL); urls.length = 0; stopTrailer(); closePlay();
+  urls.forEach(URL.revokeObjectURL); urls.length = 0; stopTrailer(); closePlay(); closeMusic(); closeReader();
   ["ovModal", "addModal", "colModal"].forEach(i => $(i).classList.add("hidden"));
   $("app").classList.add("hidden"); $("auth").classList.remove("hidden");
 };
@@ -352,13 +417,14 @@ function card(m){
   const b = document.createElement("button"); b.className = "movie";
   const u = URL.createObjectURL(m.thumb); urls.push(u);
   b.innerHTML = '<div class="poster"><img alt=""><span class="badge"></span></div><b></b><span class="d"></span>';
+  if(m.kind === "song" || m.kind === "album") b.querySelector(".poster").classList.add("sq");
   b.querySelector("img").src = u;
-  const bd = b.querySelector(".badge"), saved = m.episodes.some(e => e.link);
-  bd.textContent = (m.kind === "show" ? "Show · " + m.episodes.length + " ep" : "Movie") + (saved ? "" : " · session only");
-  if(!saved) bd.classList.add("warn");
+  const n = m.episodes.length, bd = b.querySelector(".badge");
+  bd.textContent = (m.kind === "show" ? "Show · " + n + " ep" : m.kind === "album" ? "Album · " + n + (n === 1 ? " track" : " tracks") : m.kind === "game" ? "Game" + (m.console ? " · " + m.console : "") : KLABEL[m.kind] || "Movie") + (isSaved(m) ? "" : " · session only");
+  if(!isSaved(m)) bd.classList.add("warn");
   if(m.fav){ const h = document.createElement("span"); h.className = "heart"; h.textContent = "♥"; h.setAttribute("aria-label", "Favourite"); b.querySelector(".poster").appendChild(h); }
   b.querySelector("b").textContent = m.title;
-  b.querySelector(".d").textContent = m.desc || "";
+  b.querySelector(".d").textContent = [m.by, m.desc].filter(Boolean).join(" · ");
   b.onclick = () => openOverview(m);
   return b;
 }
@@ -386,7 +452,7 @@ function render(){
   if(!cols.length){ const p = document.createElement("p"); p.className = "note"; p.textContent = "No collections yet. Make one to group your favourite films."; t.appendChild(p); }
   $("libTitle").textContent = col ? col.name : "Library"; $("colTools").classList.toggle("hidden", !col);
   const base = col ? items.filter(m => col.ids.includes(m.id)) : items;
-  const list = base.filter(m => (filter === "all" || m.kind === filter) && hit(m));
+  const list = base.filter(m => (filter === "all" || (filter === "music" ? (m.kind === "song" || m.kind === "album") : m.kind === filter)) && hit(m));
   const g = $("grid");
   if(!items.length){
     msg(g, "Your library is empty. Add a movie or show from a video link or your device.");
@@ -458,46 +524,76 @@ function frameFrom(src){
     };
   });
 }
-function placeholder(title){
+function placeholder(title, kind){
   return new Promise(res => {
-    const c = document.createElement("canvas"); c.width = 400; c.height = 600; const x = c.getContext("2d");
-    x.fillStyle = "#a8283a"; x.fillRect(0, 0, 400, 600);
+    const H = kind === "song" || kind === "album" ? 400 : 600;
+    const c = document.createElement("canvas"); c.width = 400; c.height = H; const x = c.getContext("2d");
+    x.fillStyle = {book: "#3b5b92", song: "#2f6b4f", album: "#2f6b4f", game: "#5a3d8a"}[kind] || "#a8283a"; x.fillRect(0, 0, 400, H);
     x.fillStyle = "#f3ede2"; x.font = "800 44px sans-serif"; x.textAlign = "center";
-    title.slice(0, 40).split(" ").reduce((ls, w) => { const l = ls[ls.length - 1]; (l + " " + w).length > 12 ? ls.push(w) : ls[ls.length - 1] = (l + " " + w).trim(); return ls; }, [""]).forEach((l, i) => x.fillText(l, 200, 260 + i * 54));
+    title.slice(0, 40).split(" ").reduce((ls, w) => { const l = ls[ls.length - 1]; (l + " " + w).length > 12 ? ls.push(w) : ls[ls.length - 1] = (l + " " + w).trim(); return ls; }, [""]).forEach((l, i) => x.fillText(l, 200, H / 2 - 40 + i * 54));
     c.toBlob(res, "image/jpeg", .85);
   });
 }
 const validLink = s => { try{ return /^https?:$/.test(new URL(s).protocol); }catch(e){ return false; } };
 
 /* ---------- Add / edit ---------- */
+const KINDS = {
+  movie: {link: "Video link", ph: "https://example.com/movie.mp4 or a YouTube link", note: "A direct video file (.mp4, .webm) or a YouTube link, handy for indie shows. Saved to your library.", file: "Video file", acc: "video/*", by: "", len: "Length"},
+  book: {link: "PDF link", ph: "https://example.com/book.pdf", note: "A direct link to a PDF file. Saved to your library.", file: "PDF file", acc: "application/pdf,.pdf", by: "Author", len: "Pages"},
+  song: {link: "MP3 link", ph: "https://example.com/song.mp3", note: "A direct link to an MP3 or other audio file. Saved to your library.", file: "MP3 file", acc: "audio/*,.mp3", by: "Artist", len: "Duration"},
+  album: {by: "Artist", len: ""},
+  game: {link: "Game link", ph: "https://…", note: "Any link works: a web page, a store page, an emulator page. It opens in a new tab when you press Play. Saved to your library.", by: "Developer", len: ""}
+};
+KINDS.show = KINDS.movie;
 const srcVal = () => document.querySelector("input[name=src]:checked").value;
+const isVid = k => k === "movie" || k === "show";
+const isTr = k => isVid(k) || k === "game";
 function syncAdd(){
-  $("linkWrap").classList.toggle("hidden", srcVal() !== "link");
-  $("fileWrap").classList.toggle("hidden", srcVal() !== "local");
-  $("epNameWrap").classList.toggle("hidden", editing || $("fKind").value !== "show");
+  const k = editing ? editing.kind : $("fKind").value, I = KINDS[k], vk = isVid(k), lo = k === "game";
+  $("srcWrap").classList.toggle("hidden", k === "album");
+  $("srcRadios").classList.toggle("hidden", lo);
+  $("albumNote").classList.toggle("hidden", k !== "album" || !!editing);
+  if(I.link){ $("linkLbl").textContent = I.link; $("fLink").placeholder = I.ph; $("linkNote").textContent = I.note; }
+  if(I.acc){ $("fileLbl").textContent = I.file; $("fFile").accept = I.acc; }
+  $("linkWrap").classList.toggle("hidden", !lo && srcVal() !== "link");
+  $("fileWrap").classList.toggle("hidden", lo || srcVal() !== "local");
+  $("epNameWrap").classList.toggle("hidden", !!editing || k !== "show");
+  $("qWrap").classList.toggle("hidden", !vk); $("trWrap").classList.toggle("hidden", !isTr(k));
+  $("byWrap").classList.toggle("hidden", vk); $("byLbl").textContent = I.by || "";
+  $("cWrap").classList.toggle("hidden", !lo); $("gLinkWrap").classList.toggle("hidden", !(editing && lo));
+  $("lenWrap").classList.toggle("hidden", k === "album" || lo); $("lenLbl").textContent = I.len || "";
+  $("posterNote").textContent = editing ? "Leave image fields empty to keep the current ones."
+    : vk ? "No poster? KitFlix tries to grab a frame, or makes a title card." : "No cover? KitFlix makes a title card.";
 }
 document.querySelectorAll("input[name=src]").forEach(r => r.onchange = syncAdd);
 $("fKind").onchange = syncAdd;
 function openAdd(it){
   editing = it;
   ["fLink", "fFile", "fThumb", "fLogo", "fBack", "fTrailerFile"].forEach(i => $(i).value = "");
+  $("fKeep").checked = false;
   $("fTrailer").value = it ? it.trailer || "" : ""; if(it) stopTrailer();
-  $("fTitle").value = it ? it.title : ""; $("fDesc").value = it ? it.desc || "" : "";
+  $("fTitle").value = it ? it.title : ""; $("fDesc").value = it ? it.desc || "" : ""; $("fBy").value = it ? it.by || "" : ""; $("fConsole").value = it && it.console || ""; $("fGameLink").value = it && it.kind === "game" && it.episodes[0] ? it.episodes[0].link || "" : "";
   $("fQuality").value = it ? it.quality || "" : ""; $("fLength").value = it ? it.length || "" : "";
   $("fEpName").value = "Episode 1"; $("fKind").value = "movie"; document.querySelector("input[name=src][value=link]").checked = true;
   $("newOnly").classList.toggle("hidden", !!it);
-  $("addHead").textContent = it ? "Edit details" : "Add a movie or show";
+  $("addHead").textContent = it ? "Edit details" : "Add to your library";
   $("addSave").textContent = it ? "Save changes" : "Add to library";
-  $("posterNote").textContent = it ? "Leave image fields empty to keep the current ones." : "No poster? KitFlix tries to grab a frame, or makes a title card.";
   $("addErr").textContent = ""; $("thumbPrev").classList.add("hidden"); syncAdd();
-  $("addModal").classList.remove("hidden"); $(it ? "fTitle" : "fLink").focus();
+  $("addModal").classList.remove("hidden"); $(it ? "fTitle" : "fKind").focus();
 }
 $("addBtn").onclick = () => openAdd(null);
 function closeAdd(){ $("addModal").classList.add("hidden"); if(editing && !$("ovModal").classList.contains("hidden")) armTrailer(); }
 $("addCancel").onclick = closeAdd;
 $("fFile").onchange = () => {
-  const f = $("fFile").files[0];
-  if(f && !$("fTitle").value) $("fTitle").value = f.name.replace(/\.[^.]+$/, "").replace(/[._]+/g, " ").trim();
+  const f = $("fFile").files[0]; if(!f) return;
+  const k = $("fKind").value;
+  if(!$("fTitle").value) $("fTitle").value = cleanName(f.name);
+  if($("fLength").value || !(isVid(k) || k === "song")) return;
+  const m = document.createElement(k === "song" ? "audio" : "video"), u = URL.createObjectURL(f);
+  m.preload = "metadata";
+  m.onloadedmetadata = () => { if(isFinite(m.duration) && !$("fLength").value) $("fLength").value = fmtDur(m.duration, k === "song"); URL.revokeObjectURL(u); };
+  m.onerror = () => URL.revokeObjectURL(u);
+  m.src = u;
 };
 $("fThumb").onchange = () => {
   const f = $("fThumb").files[0]; if(!f) return;
@@ -507,41 +603,50 @@ $("addSave").onclick = async () => {
   const err = $("addErr"), title = $("fTitle").value.trim();
   const pf = $("fThumb").files[0], lf = $("fLogo").files[0], bf = $("fBack").files[0];
   if(!title) return err.textContent = "Enter a title.";
-  const tl = $("fTrailer").value.trim(), tf = $("fTrailerFile").files[0];
+  const kind = editing ? editing.kind : $("fKind").value, vk = isVid(kind);
+  const tl = isTr(kind) ? $("fTrailer").value.trim() : "", tf = isTr(kind) ? $("fTrailerFile").files[0] : null;
   if(tl && !validLink(tl)) return err.textContent = "Enter a full trailer link starting with http:// or https://.";
-  const fields = {title, desc: $("fDesc").value.trim(), quality: $("fQuality").value, length: $("fLength").value.trim(), trailer: tl};
+  const gl = editing && kind === "game" ? $("fGameLink").value.trim() : "";
+  if(editing && kind === "game" && !validLink(gl)) return err.textContent = "Enter a full game link starting with http:// or https://.";
+  const fields = {title, desc: $("fDesc").value.trim(), by: vk ? "" : $("fBy").value.trim(), quality: vk ? $("fQuality").value : "",
+    length: kind === "album" || kind === "game" ? "" : $("fLength").value.trim(), trailer: tl, console: kind === "game" ? $("fConsole").value : ""};
   err.textContent = "Saving…"; $("addSave").disabled = true;
   try{
     if(editing){
       Object.assign(editing, fields); if(tf) editing.trailerFile = tf;
+      if(kind === "game" && editing.episodes[0]) editing.episodes[0].link = gl;
       if(pf) editing.thumb = await shrink(pf, 600, "image/jpeg", .85);
       if(lf) editing.logo = await shrink(lf, 800, "image/png");
       if(bf) editing.backdrop = await shrink(bf, 1600, "image/jpeg", .85);
       await persist(editing); closeAdd(); drawOverview(); render();
     } else {
-      const kind = $("fKind").value;
       const ep = {id: uid(), name: kind === "show" ? ($("fEpName").value.trim() || "Episode 1") : title};
-      if(srcVal() === "link"){
-        const l = $("fLink").value.trim();
-        if(!validLink(l)){ err.textContent = "Enter a full video link starting with http:// or https://."; return; }
-        ep.link = l;
-      } else {
-        const f = $("fFile").files[0];
-        if(!f){ err.textContent = "Choose a video file."; return; }
-        ep.file = f;
+      let eps = [];
+      if(kind !== "album"){
+        if(kind === "game" || srcVal() === "link"){
+          const l = $("fLink").value.trim();
+          if(!validLink(l)){ err.textContent = "Enter a full link starting with http:// or https://."; return; }
+          ep.link = l;
+        } else {
+          const f = $("fFile").files[0];
+          if(!f){ err.textContent = "Choose a file."; return; }
+          ep.file = f; ep.keep = $("fKeep").checked;
+        }
+        eps = [ep];
       }
-      const yid = ep.link && ytId(ep.link), yImg = yid && (!pf || !bf) ? await ytImage(yid) : null;
+      const yid = vk && ep.link && ytId(ep.link), yImg = yid && (!pf || !bf) ? await ytImage(yid) : null;
       let thumb;
       if(pf) thumb = await shrink(pf, 600, "image/jpeg", .85);
-      else if(yid) thumb = (yImg && await cropPoster(yImg)) || await placeholder(title);
-      else {
+      else if(yid) thumb = (yImg && await cropPoster(yImg)) || await placeholder(title, kind);
+      else if(vk){
         const tmp = ep.file ? URL.createObjectURL(ep.file) : null;
-        thumb = await frameFrom(tmp || ep.link) || await placeholder(title);
+        thumb = await frameFrom(tmp || ep.link) || await placeholder(title, kind);
         if(tmp) URL.revokeObjectURL(tmp);
-      }
-      const it = {id: uid(), owner: user.email, kind, ...fields, thumb, fav: false, added: Date.now(), episodes: [ep], trailerFile: tf || null,
+      } else thumb = await placeholder(title, kind);
+      const it = {id: uid(), owner: user.email, kind, ...fields, thumb, fav: false, added: Date.now(), episodes: eps, trailerFile: tf || null,
         logo: lf ? await shrink(lf, 800, "image/png") : null, backdrop: bf ? await shrink(bf, 1600, "image/jpeg", .85) : yImg};
       await persist(it); items.unshift(it); render(); $("addModal").classList.add("hidden");
+      if(kind === "album") openOverview(it);
     }
   }catch(e){ err.textContent = "Couldn’t save. Your browser may be out of storage space."; return; }
   finally{ $("addSave").disabled = false; }
@@ -552,9 +657,11 @@ $("addSave").onclick = async () => {
 function openOverview(m){
   cur = m; $("eErr").textContent = ""; $("ovModal").classList.remove("hidden"); drawOverview(); armTrailer();
 }
+const epTag = ep => ep.file ? (ep.keep ? "on this device" : "this session") : ytId(ep.link) ? "YouTube" : "saved";
 function drawOverview(){
   ovUrls.forEach(URL.revokeObjectURL); ovUrls.length = 0;
   const u = b => { const x = URL.createObjectURL(b); ovUrls.push(x); return x; };
+  const k = cur.kind, n = cur.episodes.length, multi = k === "show" || k === "album", album = k === "album";
   const hi = $("heroImg");
   hi.className = "heroImg" + (cur.backdrop ? "" : " blur");
   hi.style.backgroundImage = "url(" + u(cur.backdrop || cur.thumb) + ")";
@@ -562,38 +669,59 @@ function drawOverview(){
   if(cur.logo){ const i = document.createElement("img"); i.src = u(cur.logo); i.alt = cur.title; lg.appendChild(i); }
   else { const h = document.createElement("h2"); h.textContent = cur.title; lg.appendChild(h); }
   const meta = $("ovMeta"); meta.innerHTML = "";
-  const pills = [cur.kind === "show" ? "Show" : "Movie", cur.quality, cur.length, cur.kind === "show" ? cur.episodes.length + (cur.episodes.length === 1 ? " episode" : " episodes") : ""];
-  pills.filter(Boolean).forEach(t => { const s = document.createElement("span"); s.className = "pill"; s.textContent = t; meta.appendChild(s); });
+  const len = cur.length ? (k === "book" && /^\d+$/.test(cur.length) ? cur.length + " pages" : cur.length) : "";
+  const count = multi ? n + (album ? (n === 1 ? " track" : " tracks") : (n === 1 ? " episode" : " episodes")) : "";
+  [KLABEL[k], k === "game" ? cur.console : "", isVid(k) ? cur.quality : "", cur.by, len, count].filter(Boolean).forEach(t => { const s = document.createElement("span"); s.className = "pill"; s.textContent = t; meta.appendChild(s); });
   $("ovDesc").textContent = cur.desc || "No description yet. Use Edit details to add one.";
   $("ovFav").textContent = cur.fav ? "♥ Favourited" : "♡ Favourite"; $("ovFav").setAttribute("aria-pressed", !!cur.fav);
-  $("addEp").classList.toggle("hidden", cur.kind !== "show");
+  $("ovPlay").textContent = k === "book" ? "Read" : album ? "▶ Play album" : k === "game" ? "▶ Play game ↗" : "▶ Play";
+  $("ovPlay").classList.toggle("hidden", !n);
+  $("addEp").classList.toggle("hidden", !multi);
+  $("addEpLbl").textContent = album ? "Add songs" : "Add an episode";
+  $("eAdd").textContent = album ? "Add song(s)" : "Add episode";
+  $("eName").placeholder = album ? "Song name (optional)" : "Episode name";
+  $("eLink").placeholder = album ? "MP3 link" : "Video or YouTube link";
+  $("eFile").accept = album ? "audio/*,.mp3" : "video/*"; $("eFile").multiple = album;
   const box = $("eps"); box.innerHTML = "";
-  if(cur.kind === "show" || cur.episodes.length > 1) cur.episodes.forEach((ep, i) => {
-    const b = document.createElement("button"); b.className = "ep";
-    const n = document.createElement("span"); n.textContent = "▶ " + (i + 1) + ". " + ep.name;
-    const s = document.createElement("small"); s.textContent = ep.file ? "this session" : ytId(ep.link) ? "YouTube" : "saved";
-    b.append(n, s); b.onclick = () => startPlay(i); box.appendChild(b);
+  if(album && !n){ const p = document.createElement("p"); p.className = "note"; p.textContent = "No songs yet. Add one below, or add several MP3 files at once."; box.appendChild(p); }
+  if(multi || n > 1) cur.episodes.forEach((ep, i) => {
+    const row = document.createElement("div"); row.className = "ep";
+    const b = document.createElement("button"); b.className = "epPlay";
+    const nm = document.createElement("span"); nm.textContent = "▶ " + (i + 1) + ". " + ep.name;
+    const s = document.createElement("small"); s.textContent = epTag(ep);
+    b.append(nm, s); b.onclick = () => playItem(i);
+    const x = document.createElement("button"); x.className = "epX"; x.textContent = "Remove"; x.setAttribute("aria-label", "Remove " + ep.name);
+    x.onclick = async () => { if(mq === cur) closeMusic(); cur.episodes.splice(i, 1); await persist(cur); drawOverview(); };
+    row.append(b, x); box.appendChild(row);
   });
+}
+function playItem(i){
+  const k = cur.kind;
+  if(k === "book") openReader(); else if(k === "game") window.open(cur.episodes[0].link, "_blank", "noopener,noreferrer"); else if(k === "song" || k === "album") startMusic(i); else startPlay(i);
 }
 function closeOverview(){ stopTrailer(); ovUrls.forEach(URL.revokeObjectURL); ovUrls.length = 0; $("ovModal").classList.add("hidden"); render(); }
 $("ovClose").onclick = closeOverview;
-$("ovPlay").onclick = () => startPlay(0);
+$("ovPlay").onclick = () => playItem(0);
 $("ovEdit").onclick = () => openAdd(cur);
 $("ovFav").onclick = async () => { cur.fav = !cur.fav; await persist(cur); drawOverview(); };
 $("ovDel").onclick = async () => {
   if(!confirm("Remove “" + cur.title + "” from your library?")) return;
+  if(mq === cur) closeMusic();
   await delItem(cur.id); items = items.filter(x => x.id !== cur.id);
   user.collections.forEach(c => c.ids = c.ids.filter(x => x !== cur.id)); await saveUser(); closeOverview();
 };
 $("eAdd").onclick = async () => {
-  const name = $("eName").value.trim() || ("Episode " + (cur.episodes.length + 1)), l = $("eLink").value.trim(), f = $("eFile").files[0], err = $("eErr");
-  const ep = {id: uid(), name};
-  if(l){ if(!validLink(l)) return err.textContent = "Enter a full link starting with http:// or https://."; ep.link = l; }
-  else if(f) ep.file = f;
-  else return err.textContent = "Add a video link or choose a file.";
-  cur.episodes.push(ep);
-  try{ await persist(cur); }catch(e){ err.textContent = "Couldn’t save this episode."; return; }
-  ["eName", "eLink", "eFile"].forEach(i => $(i).value = ""); err.textContent = ""; drawOverview();
+  const album = cur.kind === "album", err = $("eErr"), l = $("eLink").value.trim(), files = [...$("eFile").files], keep = $("eKeep").checked, base = $("eName").value.trim();
+  const n0 = cur.episodes.length, add = [];
+  if(l){
+    if(!validLink(l)) return err.textContent = "Enter a full link starting with http:// or https://.";
+    add.push({id: uid(), name: base || (album ? "Track " : "Episode ") + (n0 + 1), link: l});
+  } else if(files.length){
+    files.forEach((f, i) => add.push({id: uid(), name: (files.length === 1 && base) || (album ? cleanName(f.name) : "Episode " + (n0 + i + 1)), file: f, keep}));
+  } else return err.textContent = "Add a link or choose a file.";
+  cur.episodes.push(...add);
+  try{ await persist(cur); }catch(e){ err.textContent = "Couldn’t save. Your browser may be out of storage space."; return; }
+  ["eName", "eLink", "eFile"].forEach(i => $(i).value = ""); $("eKeep").checked = false; err.textContent = ""; drawOverview();
 };
 
 /* ---------- YouTube helpers ---------- */
@@ -710,7 +838,7 @@ function exitFs(){ if(document.fullscreenElement) document.exitFullscreen().catc
 $("plFs").onclick = () => fsOn() ? exitFs() : enterFs();
 document.addEventListener("fullscreenchange", syncFs);
 function startPlay(i){
-  stopTrailer(); curEp = i; pl.classList.remove("hidden"); setSrc(); enterFs();
+  stopTrailer(); pauseMusic(); curEp = i; pl.classList.remove("hidden"); setSrc(); enterFs();
 }
 function closePlay(){
   if(pl.classList.contains("hidden")) return;
@@ -738,10 +866,57 @@ window.addEventListener("message", e => {
 document.addEventListener("keydown", e => {
   if(e.key !== "Escape") return;
   if(!pl.classList.contains("hidden")) return closePlay();
+  if(!$("rd").classList.contains("hidden")) return closeReader();
   for(const id of ["colModal", "addModal", "ovModal"]){
     if(!$(id).classList.contains("hidden")){ id === "ovModal" ? closeOverview() : id === "addModal" ? closeAdd() : $(id).classList.add("hidden"); if(id === "colModal") render(); return; }
   }
 });
+
+/* ---------- Music player (keeps playing while you browse) ---------- */
+const aud = $("aud"); let mq = null, mi = 0, mUrl = null, mArt = null;
+function loadTrack(){
+  const ep = mq.episodes[mi];
+  if(mUrl){ URL.revokeObjectURL(mUrl); mUrl = null; }
+  if(ep.file){ mUrl = URL.createObjectURL(ep.file); aud.src = mUrl; } else aud.src = ep.link;
+  if(mArt) URL.revokeObjectURL(mArt);
+  mArt = URL.createObjectURL(mq.thumb); $("mpArt").src = mArt;
+  $("mpTitle").textContent = ep.name;
+  $("mpSub").textContent = [mq.kind === "album" ? mq.title : "", mq.by].filter(Boolean).join(" · ");
+  $("mpPrev").disabled = mi === 0; $("mpNext").disabled = mi >= mq.episodes.length - 1;
+  $("mp").classList.remove("hidden"); document.body.classList.add("mpOn");
+  aud.play().catch(() => {});
+}
+function startMusic(i){ stopTrailer(); mq = cur; mi = i; loadTrack(); }
+function pauseMusic(){ if(mq) aud.pause(); }
+function closeMusic(){
+  aud.pause(); aud.removeAttribute("src"); aud.load();
+  if(mUrl){ URL.revokeObjectURL(mUrl); mUrl = null; }
+  if(mArt){ URL.revokeObjectURL(mArt); mArt = null; }
+  mq = null; $("mp").classList.add("hidden"); document.body.classList.remove("mpOn");
+}
+aud.addEventListener("ended", () => { if(mq && mi + 1 < mq.episodes.length){ mi++; loadTrack(); } });
+aud.addEventListener("error", () => { if(aud.getAttribute("src")) $("mpSub").textContent = "Couldn’t play this track. Check the link points straight at an audio file."; });
+$("mpNext").onclick = () => { if(mq && mi + 1 < mq.episodes.length){ mi++; loadTrack(); } };
+$("mpPrev").onclick = () => { if(mq && mi > 0){ mi--; loadTrack(); } };
+$("mpClose").onclick = closeMusic;
+
+/* ---------- Book reader (PDF) ---------- */
+let rdUrl = null;
+function openReader(){
+  const ep = cur.episodes[0]; if(!ep) return;
+  stopTrailer(); closeReaderUrl();
+  let src;
+  if(ep.file){ rdUrl = URL.createObjectURL(ep.file.slice(0, ep.file.size, "application/pdf")); src = rdUrl; } else src = ep.link;
+  $("rdTitle").textContent = cur.title; $("rdOpen").href = src; $("rdFrame").src = src;
+  $("rd").classList.remove("hidden");
+}
+function closeReaderUrl(){ if(rdUrl){ URL.revokeObjectURL(rdUrl); rdUrl = null; } }
+function closeReader(){
+  if($("rd").classList.contains("hidden")) return;
+  $("rd").classList.add("hidden"); $("rdFrame").removeAttribute("src"); closeReaderUrl();
+  if(cur && !$("ovModal").classList.contains("hidden")) armTrailer();
+}
+$("rdBack").onclick = closeReader;
 
 /* ---------- Boot ---------- */
 (async () => {
