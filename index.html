@@ -7,10 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#141414;--panel:#1f1f1f;--line:#3a3a3a;--paper:#f5f5f1;--mute:#a8a8a8;--red:#e50914;--redt:#ff6b73;--amber:#e50914;--velvet:#b20710;--r:6px;--pad:clamp(1rem,4vw,3.5rem)}
+:root{--ink:#141414;--panel:#1f1f1f;--line:#3a3a3a;--paper:#f5f5f1;--mute:#a8a8a8;--red:#e50914;--redt:#ff6b73;--amber:var(--red);--velvet:#b20710;--r:6px;--pad:clamp(1rem,4vw,3.5rem)}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{background:var(--ink);color:var(--paper);font:400 1rem/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+body{background:var(--ink);color:var(--paper);font:400 1rem/1.5 var(--font,"Bricolage Grotesque"),system-ui,sans-serif}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid #fff;outline-offset:3px}
@@ -29,7 +29,7 @@ label{display:block;font-size:.9rem;color:var(--mute);margin:.9rem 0 .3rem}
 .note{font-size:.82rem;color:var(--mute);margin:.5rem 0 0}
 
 /* ---- who's watching ---- */
-#profiles{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;padding:4.5rem 1rem 2rem;text-align:center;background:radial-gradient(ellipse at 20% 0%,rgba(229,9,20,.25),transparent 55%),var(--ink)}
+#profiles{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;padding:4.5rem 1rem 2rem;text-align:center;background:radial-gradient(ellipse at 20% 0%,color-mix(in srgb,var(--red) 25%,transparent),transparent 55%),var(--ink)}
 .pflogo{position:absolute;top:1.2rem;left:var(--pad)}
 #profiles h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:600;margin:0;letter-spacing:-.02em}
 .pfgrid{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(1rem,3vw,2.2rem);max-width:1000px}
@@ -38,7 +38,7 @@ label{display:block;font-size:.9rem;color:var(--mute);margin:.9rem 0 .3rem}
 .pf:hover,.pf:focus-visible{color:#fff;outline:none}
 .pf:hover .av,.pf:focus-visible .av{border-color:#fff;transform:scale(1.06)}
 .pf .n{display:block;margin-top:.6rem;font-size:clamp(.95rem,1.6vw,1.25rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pf.add .av{background:#2a2a2a;font-size:3.2rem;color:#999}
+.pf.add .av{background:var(--panel);font-size:3.2rem;color:#999}
 .pf.edit .av::after{content:"✎";position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);color:#fff;font-size:2.4rem}
 .av{display:grid;place-items:center;font-size:clamp(2.6rem,6vw,5rem);background-size:cover;background-position:center;overflow:hidden;position:relative}
 .av.big{width:84px;height:84px;font-size:2.6rem;border-radius:8px;flex:none}
@@ -69,7 +69,7 @@ label{display:block;font-size:.9rem;color:var(--mute);margin:.9rem 0 .3rem}
 .bill{position:relative;min-height:min(80vh,740px);display:flex;align-items:flex-end;background:var(--ink)}
 .bill .bg{position:absolute;inset:0;background-size:cover;background-position:center 20%}
 .bill .bg.blur{filter:blur(26px) brightness(.55);transform:scale(1.2)}
-.bill::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--ink) 3%,transparent 48%),linear-gradient(to right,rgba(20,20,20,.88),transparent 62%)}
+.bill::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--ink) 3%,transparent 48%),linear-gradient(to right,color-mix(in srgb,var(--ink) 88%,transparent),transparent 62%)}
 .bill .in{position:relative;z-index:1;padding:8rem var(--pad) 7rem;max-width:660px}
 .bill img.lg{max-width:min(440px,85%);max-height:150px;object-fit:contain;display:block;margin-bottom:1rem}
 .bill h1{font-size:clamp(2.2rem,6vw,4.2rem);margin:0 0 .8rem;letter-spacing:-.03em;line-height:1}
@@ -89,7 +89,7 @@ label{display:block;font-size:.9rem;color:var(--mute);margin:.9rem 0 .3rem}
 .rowwrap{position:relative}
 .scroller{display:flex;gap:.55rem;overflow-x:auto;padding:1.3rem var(--pad) 2rem;scrollbar-width:none;scroll-padding:0 var(--pad)}
 .scroller::-webkit-scrollbar{display:none}
-.arr{position:absolute;top:1.3rem;bottom:2rem;width:clamp(2rem,3.5vw,3.2rem);border:0;background:rgba(20,20,20,.65);color:#fff;font-size:2.2rem;opacity:0;transition:opacity .2s;z-index:5}
+.arr{position:absolute;top:1.3rem;bottom:2rem;width:clamp(2rem,3.5vw,3.2rem);border:0;background:color-mix(in srgb,var(--ink) 65%,transparent);color:#fff;font-size:2.2rem;opacity:0;transition:opacity .2s;z-index:5}
 .arr.l{left:0}.arr.r{right:0}
 .rowwrap:hover .arr,.arr:focus-visible{opacity:1}
 @media (hover:none){.arr{display:none}}
@@ -100,8 +100,8 @@ label{display:block;font-size:.9rem;color:var(--mute);margin:.9rem 0 .3rem}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.6rem 1rem;padding:1rem var(--pad) 4rem}
 .grid .movie{width:auto}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;padding:1rem var(--pad) 4rem}
-.ctile{background:linear-gradient(135deg,#2c2c2c,#1b1b1b);border:0;border-left:4px solid var(--red);border-radius:var(--r);padding:1.6rem 1.2rem;text-align:left;min-height:110px;color:var(--paper)}
-.ctile:hover{background:#333}
+.ctile{background:linear-gradient(135deg,var(--panel),var(--ink));border:0;border-left:4px solid var(--red);border-radius:var(--r);padding:1.6rem 1.2rem;text-align:left;min-height:110px;color:var(--paper)}
+.ctile:hover{background:var(--line)}
 .ctile b{display:block;font-size:1.1rem}
 .ctile small{color:var(--mute)}
 .msg{margin:1rem var(--pad)}
@@ -223,17 +223,76 @@ html.tv .bill .in{max-width:900px}
 html.tv .links{gap:1.6rem}
 html.tv .arr,html.tv .qa{display:none}
 html.tv .rowhead .more{display:none}
+/* ---- themes ---- */
+html[data-theme="roku"]{--ink:#14071f;--panel:#220e36;--line:#412767;--paper:#f6f1fb;--mute:#b3a3c9;--red:#7b2cbf;--redt:#d1a8ff;--velvet:#a1243a}
+html[data-theme="midnight"]{--ink:#0a1020;--panel:#111b33;--line:#243659;--paper:#eef3ff;--mute:#9db0d3;--red:#2f6bff;--redt:#86adff;--velvet:#b3243c}
+/* ---- customize: background, stickers, page ---- */
+#bgfx{position:fixed;inset:0;z-index:-1;background-size:cover;background-position:center;display:none}
+#bgfx.on{display:block}
+#bgfx::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,var(--dim,.5))}
+#gifs{position:fixed;inset:0;z-index:9;pointer-events:none}
+.sticker{position:absolute;pointer-events:auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5));max-width:40vw}
+.sticker:active{cursor:grabbing}
+.iconbtn{background:none;border:1px solid #777;color:#fff;border-radius:99px;width:2.1rem;height:2.1rem;font-size:1rem;padding:0;flex:none}
+.iconbtn[aria-pressed=false]{opacity:.5;text-decoration:line-through}
+.cu{padding:6.6rem var(--pad) 4rem;max-width:1000px}
+.cu>h1{margin:0 0 .3rem;font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-.02em}
+.cu>.sub{color:var(--mute);margin:0 0 1.4rem}
+.cu section{background:var(--panel);border-radius:10px;padding:1.2rem 1.4rem;margin-bottom:1.2rem}
+.cu h2{margin:0 0 .2rem;font-size:1.15rem}
+.cu .sub{color:var(--mute);margin:0 0 .8rem;font-size:.9rem}
+.cu .line{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center;margin-top:.6rem}
+.cu .line input[type=text],.cu .line input[type=url]{flex:1;min-width:170px;width:auto}
+.cu .line input[type=file]{flex:1;min-width:170px;width:auto}
+.cu .line select{width:auto}
+.cu .line label{margin:0;display:flex;gap:.5rem;align-items:center;color:var(--paper)}
+.cu .line label input{width:auto}
+.cu input[type=range]{width:200px;padding:0}
+.cu input[type=color]{width:3rem;height:2.4rem;padding:.1rem}
+.themes{display:flex;gap:.8rem;flex-wrap:wrap}
+.theme{border:3px solid transparent;border-radius:10px;padding:0;width:160px;overflow:hidden;background:var(--ink);color:#fff;text-align:left}
+.theme[aria-pressed=true]{border-color:#fff}
+.theme .sw{height:64px}
+.theme span{display:block;padding:.5rem .7rem;font-weight:600}
+.tlist{display:flex;flex-direction:column;gap:.4rem;margin-top:.8rem}
+.trow{display:flex;gap:.8rem;align-items:center;background:var(--ink);border-radius:var(--r);padding:.4rem .7rem}
+.trow img{width:44px;height:44px;object-fit:cover;border-radius:6px}
+.trow span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow small{color:var(--mute)}
+.trow button{background:none;border:0;color:var(--mute)}
+.trow button:hover{color:#ff8a98}
+.sfxrow{background:var(--ink);border-radius:var(--r);padding:.8rem 1rem}
+.sfxrow small{color:var(--mute)}
+.sfxrow .note{margin:.3rem 0 0}
+/* ---- first-run setup ---- */
+#setup{min-height:100vh;padding:5rem var(--pad) 2rem;background:radial-gradient(ellipse at 20% 0%,color-mix(in srgb,var(--red) 25%,transparent),transparent 55%),var(--ink)}
+.setupBox{max-width:1000px;margin:0 auto}
+.step{color:var(--mute);font-size:.85rem;text-transform:uppercase;letter-spacing:.12em;margin:0 0 .6rem}
+#setup h1{font-size:clamp(1.8rem,4.5vw,3rem);margin:.2rem 0;letter-spacing:-.02em}
+#setup .sub{color:var(--mute);margin:.3rem 0 1rem}
+.sustep1{max-width:560px}
+.sutop{display:flex;gap:1rem;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:.6rem}
+#setup .cu{padding:0;max-width:none}
+#setup .cu>h1,#setup .cu>.sub{display:none}
+.sufoot{position:sticky;bottom:0;padding:1.2rem 0 .6rem;background:linear-gradient(transparent,var(--ink) 45%);display:flex;justify-content:flex-end}
 @media (max-width:560px){.split{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
+<div id="bgfx"></div><div id="gifs"></div><audio id="bgm" preload="none"></audio>
 
 <section id="profiles" class="hidden">
   <span class="logo pflogo">KitFlix</span>
   <h1 id="pfTitle">Who’s watching?</h1>
   <div class="pfgrid" id="pfGrid"></div>
   <button class="btn ghost" id="pfManage">Manage profiles</button>
+</section>
+
+<!-- First-run setup -->
+<section id="setup" class="hidden">
+  <span class="logo pflogo">KitFlix</span>
+  <div class="setupBox"><p class="step" id="suStep"></p><div id="suBody"></div></div>
 </section>
 
 <!-- Profile editor -->
@@ -262,10 +321,11 @@ html.tv .rowhead .more{display:none}
     </div>
     <span class="grow"></span>
     <input id="search" type="search" placeholder="Search titles" aria-label="Search your library">
+    <button class="iconbtn hidden" id="bgmBtn" aria-pressed="true" aria-label="Browsing music on or off" title="Browsing music">♪</button>
     <button class="btn red" id="addBtn">+ Add title</button>
     <div class="acct">
       <button class="avatar" id="acctBtn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu"></button>
-      <div class="menu hidden" id="acctMenu"><p id="who"></p><button class="btn ghost" id="editBtn" style="margin-bottom:.5rem">Edit profile</button><button class="btn ghost" id="tvBtn" style="margin-bottom:.5rem">TV mode: off</button><button class="btn ghost" id="outBtn">Switch profile</button></div>
+      <div class="menu hidden" id="acctMenu"><p id="who"></p><button class="btn ghost" id="cuBtn" style="margin-bottom:.5rem">Customize</button><button class="btn ghost" id="editBtn" style="margin-bottom:.5rem">Edit profile</button><button class="btn ghost" id="tvBtn" style="margin-bottom:.5rem">TV mode: off</button><button class="btn ghost" id="outBtn">Switch profile</button></div>
     </div>
   </nav>
   <main id="main"></main>
@@ -348,6 +408,17 @@ html.tv .rowhead .more{display:none}
       <label class="inl"><input type="checkbox" id="eKeep"> Keep a copy of local files in this browser</label>
       <p class="note">A link is saved. Local files last this session unless you tick the box. A link wins if both are filled.</p>
       <p class="err" id="eErr" role="alert"></p>
+    </div>
+    <div class="addep hidden" id="preBox">
+      <label id="preLbl">Cinema pre-reels (0/5)</label>
+      <div class="eps" id="preList"></div>
+      <div id="preAdd">
+        <div class="split"><input id="pName" placeholder="Name (optional)"><input id="pLink" type="url" placeholder="YouTube or any video link"></div>
+        <div class="split" style="margin-top:.5rem"><input id="pFile" type="file" accept="video/*" multiple aria-label="Or choose local files"><button class="btn ghost" id="pAdd">Add pre-reel</button></div>
+        <label class="inl"><input type="checkbox" id="pKeep"> Keep a copy of local files in this browser</label>
+        <p class="note">Pre-reels play in order before the movie, like trailers at the cinema. Up to 5. A link wins if both are filled.</p>
+        <p class="err" id="pErr" role="alert"></p>
+      </div>
     </div>
     <div class="row"><button class="btn danger" id="ovDel">Remove from library</button></div>
   </div>
@@ -434,6 +505,7 @@ async function persist(it){
   if(saved.length || it.kind === "album"){
     await putItem({id: it.id, owner: it.owner, kind: it.kind, title: it.title, desc: it.desc, by: it.by || "", console: it.console || "", thumb: it.thumb, logo: it.logo, backdrop: it.backdrop,
       quality: it.quality, length: it.length, trailer: it.trailer || "", fav: it.fav, added: it.added,
+      prereels: (it.prereels || []).filter(e => e.link || e.keep).slice(0, 5).map(e => e.link ? {id: e.id, name: e.name, link: e.link} : {id: e.id, name: e.name, keep: true, file: e.file}),
       episodes: saved.map(e => e.link ? {id: e.id, name: e.name, link: e.link} : {id: e.id, name: e.name, keep: true, file: e.file})});
   } else await delItem(it.id);
 }
@@ -487,7 +559,7 @@ function drawProfiles(){
   const add = document.createElement("button"); add.className = "pf add";
   add.innerHTML = '<div class="av">+</div><span class="n">Add profile</span>'; add.onclick = () => openProfileEditor(null); g.appendChild(add);
 }
-function enterProfile(p){ user = p; user.collections = user.collections || []; showApp(); }
+function enterProfile(p){ user = p; user.collections = user.collections || []; playSfx("login"); showApp(); }
 $("pfManage").onclick = () => { managing = !managing; drawProfiles(); };
 
 function switchProfile(){
@@ -495,6 +567,7 @@ function switchProfile(){
   ["ovModal", "addModal", "colModal", "pfModal"].forEach(i => $(i).classList.add("hidden"));
   urls.forEach(URL.revokeObjectURL); urls.length = 0;
   $("acctMenu").classList.add("hidden"); user = null; items = []; viewCol = null; filter = "all"; managing = false;
+  bgmHolds.clear(); clearSfx(); applyCustom();
   showProfiles();
 }
 $("outBtn").onclick = switchProfile;
@@ -559,7 +632,7 @@ function pickHero(){
 }
 async function showApp(){
   $("profiles").classList.add("hidden"); $("app").classList.remove("hidden");
-  $("who").textContent = user.name; paintNavAvatar();
+  $("who").textContent = user.name; paintNavAvatar(); applyCustom();
   items = (await getItems(user.email)).filter(m => m.episodes).sort((a, b) => b.added - a.added);
   filter = "all"; viewCol = null; $("search").value = ""; pickHero(); render();
   if(document.documentElement.classList.contains("tv")){ const f = document.querySelector(".bill .btn") || document.querySelector(".links button"); if(f) f.focus({preventScroll: true}); }
@@ -645,6 +718,7 @@ function groupsFor(f, list){
   return [["", list]];
 }
 function buildPage(main, q, hit, col){
+  if(filter === "customize" && !q){ main.appendChild(customizePage()); return; }
   const cols = user.collections;
   if(!items.length && !cols.length){
     main.append(pageHead("Welcome to KitFlix"), msgEl("Your library is empty. Add a movie, show, book, song, album or game to get started.", true)); return;
@@ -923,6 +997,22 @@ function drawOverview(){
   $("eName").placeholder = album ? "Song name (optional)" : "Episode name";
   $("eLink").placeholder = album ? "MP3 link" : "Any video link or page";
   $("eFile").accept = album ? "audio/*,.mp3" : "video/*"; $("eFile").multiple = album;
+  const pbox = $("preBox"), movie = k === "movie"; pbox.classList.toggle("hidden", !movie);
+  if(movie){
+    const plist = cur.prereels = cur.prereels || [];
+    $("preLbl").textContent = "Cinema pre-reels (" + plist.length + "/5)";
+    $("preAdd").classList.toggle("hidden", plist.length >= 5);
+    const pl2 = $("preList"); pl2.innerHTML = "";
+    plist.forEach((ep, i) => {
+      const row = document.createElement("div"); row.className = "ep";
+      const main = document.createElement("span"); main.className = "epPlay";
+      const nm = document.createElement("span"); nm.textContent = (i + 1) + ". " + ep.name;
+      const tag = document.createElement("small"); tag.textContent = epTag(ep); main.append(nm, tag);
+      const x = document.createElement("button"); x.className = "epX"; x.textContent = "Remove"; x.setAttribute("aria-label", "Remove pre-reel " + ep.name);
+      x.onclick = async () => { plist.splice(i, 1); await persist(cur); drawOverview(); };
+      row.append(main, x); pl2.appendChild(row);
+    });
+  }
   const box = $("eps"); box.innerHTML = "";
   if(album && !n){ const p = document.createElement("p"); p.className = "note"; p.textContent = "No songs yet. Add one below, or add several MP3 files at once."; box.appendChild(p); }
   if(multi || n > 1) cur.episodes.forEach((ep, i) => {
@@ -936,7 +1026,24 @@ function drawOverview(){
     row.append(b, x); box.appendChild(row);
   });
 }
+$("pAdd").onclick = async () => {
+  const list = cur.prereels = cur.prereels || [], err = $("pErr"), l = $("pLink").value.trim(), files = [...$("pFile").files], keep = $("pKeep").checked, base = $("pName").value.trim();
+  const room = 5 - list.length; if(room <= 0) return err.textContent = "You can add up to 5 pre-reels.";
+  const add = [];
+  if(l){
+    if(!validLink(l)) return err.textContent = "Enter a full link starting with http:// or https://.";
+    add.push({id: uid(), name: base || "Pre-reel " + (list.length + 1), link: l});
+  } else if(files.length){
+    files.slice(0, room).forEach((f, i) => add.push({id: uid(), name: (files.length === 1 && base) || cleanName(f.name) || "Pre-reel " + (list.length + i + 1), file: f, keep}));
+  } else return err.textContent = "Add a link or choose a file.";
+  list.push(...add);
+  try{ await persist(cur); }catch(e){ err.textContent = "Couldn’t save. Your browser may be out of storage space."; return; }
+  ["pName", "pLink", "pFile"].forEach(i => $(i).value = ""); $("pKeep").checked = false;
+  err.textContent = !l && files.length > room ? "Only the first " + room + " files were added (5 is the maximum)." : "";
+  drawOverview();
+};
 function playItem(i){
+  playSfx("play");
   const k = cur.kind;
   if(k === "book") openReader(); else if(k === "game") openGame(); else if(k === "song" || k === "album") startMusic(i); else startPlay(i);
 }
@@ -945,7 +1052,7 @@ function closeOverview(){
   const id = cur && cur.id; render();
   const c = id && document.querySelector('.movie[data-id="' + id + '"]'); if(c) c.focus({preventScroll: true});
 }
-$("ovClose").onclick = closeOverview;
+$("ovClose").onclick = () => { playSfx("back"); closeOverview(); };
 $("ovPlay").onclick = () => playItem(0);
 $("ovEdit").onclick = () => openAdd(cur);
 $("ovFav").onclick = async () => { cur.fav = !cur.fav; await persist(cur); drawOverview(); };
@@ -1025,7 +1132,7 @@ function embedUrl(link){
 /* ---------- Trailer (autoplays after 5 seconds on the overview) ---------- */
 const tr = $("trailer"), trY = $("trailerY"); let trT, trUrl = null, trIsYt = false;
 function stopTrailer(){
-  clearTimeout(trT); trIsYt = false;
+  clearTimeout(trT); trIsYt = false; bgmRelease("trailer");
   tr.pause(); tr.classList.remove("on"); tr.removeAttribute("src"); tr.load();
   trY.classList.remove("on"); trY.src = "about:blank";
   if(trUrl){ URL.revokeObjectURL(trUrl); trUrl = null; }
@@ -1035,6 +1142,7 @@ function armTrailer(){
   stopTrailer();
   if(!cur || (!cur.trailer && !cur.trailerFile)) return;
   trT = setTimeout(() => {
+    bgmHold("trailer");
     $("trSound").textContent = "Sound on";
     const id = !cur.trailerFile && ytId(cur.trailer);
     if(id){
@@ -1054,7 +1162,7 @@ function armTrailer(){
   }, 5000);
 }
 tr.addEventListener("error", () => { if(tr.getAttribute("src")) stopTrailer(); });
-tr.addEventListener("ended", () => { tr.classList.remove("on"); $("trSound").classList.add("hidden"); });
+tr.addEventListener("ended", () => { tr.classList.remove("on"); $("trSound").classList.add("hidden"); bgmRelease("trailer"); });
 $("trSound").onclick = () => {
   const on = $("trSound").textContent === "Sound on";
   if(trIsYt) ytPost(trY, {event: "command", func: on ? "unMute" : "mute", args: []}); else tr.muted = !on;
@@ -1069,16 +1177,18 @@ function wake(){
   if(!pl.classList.contains("yt")) idleT = setTimeout(() => pl.classList.add("idle"), 2800);
 }
 ["mousemove", "touchstart", "keydown"].forEach(ev => pl.addEventListener(ev, wake));
+let preIdx = -1;
 function setSrc(){
-  const ep = cur.episodes[curEp], mode = ep.file ? "file" : linkMode(ep.link), frame = mode !== "file";
+  const pre = preIdx >= 0, ep = pre ? cur.prereels[preIdx] : cur.episodes[curEp], mode = ep.file ? "file" : linkMode(ep.link), frame = mode !== "file";
   if(playUrl){ URL.revokeObjectURL(playUrl); playUrl = null; }
   $("plErr").classList.add("hidden");
-  $("plTitle").textContent = cur.kind === "show" ? cur.title + " · " + ep.name : cur.title;
+  $("plTitle").textContent = pre ? cur.title + " · Pre-reel " + (preIdx + 1) + " of " + cur.prereels.length : cur.kind === "show" ? cur.title + " · " + ep.name : cur.title;
   vid.pause(); pl.classList.toggle("yt", frame); vid.classList.toggle("hidden", frame); yt.classList.toggle("hidden", !frame);
   $("plOpen").classList.toggle("hidden", !frame); if(frame) $("plOpen").href = ep.link;
   const multi = cur.episodes.length > 1;
-  $("plPrev").classList.toggle("hidden", !multi); $("plNext").classList.toggle("hidden", !multi);
-  $("plPrev").disabled = curEp === 0; $("plNext").disabled = curEp >= cur.episodes.length - 1;
+  $("plPrev").classList.toggle("hidden", pre || !multi); $("plNext").classList.toggle("hidden", !pre && !multi);
+  $("plNext").textContent = pre ? "Skip ›" : "Next ›";
+  $("plPrev").disabled = curEp === 0; $("plNext").disabled = !pre && curEp >= cur.episodes.length - 1;
   if(frame){
     vid.removeAttribute("src"); vid.load();
     if(mode === "yt"){ yt.onload = () => ytListen(yt); yt.src = ytSrc(ytId(ep.link), "&autoplay=1"); }
@@ -1100,40 +1210,42 @@ function exitFs(){ if(document.fullscreenElement) document.exitFullscreen().catc
 $("plFs").onclick = () => fsOn() ? exitFs() : enterFs();
 document.addEventListener("fullscreenchange", syncFs);
 function startPlay(i){
-  stopTrailer(); pauseMusic(); curEp = i; pl.classList.remove("hidden"); setSrc(); enterFs();
+  stopTrailer(); pauseMusic(); bgmHold("player"); curEp = i; preIdx = cur.kind === "movie" && i === 0 && (cur.prereels || []).length ? 0 : -1; pl.classList.remove("hidden"); setSrc(); enterFs();
 }
 function closePlay(){
   if(pl.classList.contains("hidden")) return;
-  pl.classList.add("hidden"); vid.pause(); vid.removeAttribute("src"); vid.load(); yt.src = "about:blank";
+  preIdx = -1; bgmRelease("player"); pl.classList.add("hidden"); vid.pause(); vid.removeAttribute("src"); vid.load(); yt.src = "about:blank";
   if(playUrl){ URL.revokeObjectURL(playUrl); playUrl = null; }
   pl.classList.remove("yt", "fs"); exitFs();
   if(cur && !$("ovModal").classList.contains("hidden")) armTrailer();
 }
-function nextOrClose(){ if(curEp + 1 < cur.episodes.length){ curEp++; setSrc(); } else closePlay(); }
-function stepEp(d){ const n = curEp + d; if(n < 0 || n >= cur.episodes.length) return; curEp = n; setSrc(); }
+function nextOrClose(){ if(preIdx >= 0) return advancePre(); if(curEp + 1 < cur.episodes.length){ curEp++; setSrc(); } else closePlay(); }
+function advancePre(){ preIdx++; if(preIdx >= (cur.prereels || []).length) preIdx = -1; setSrc(); }
+function stepEp(d){ if(preIdx >= 0){ if(d > 0) advancePre(); return; } const n = curEp + d; if(n < 0 || n >= cur.episodes.length) return; curEp = n; setSrc(); }
 $("plPrev").onclick = () => stepEp(-1); $("plNext").onclick = () => stepEp(1);
-$("plBack").onclick = closePlay;
+$("plBack").onclick = () => { playSfx("back"); closePlay(); };
 vid.addEventListener("ended", nextOrClose);
 vid.addEventListener("error", () => {
   const e = $("plErr"); e.textContent = "This video couldn’t play. The file may be in a format your browser doesn’t support, or the site may block playback from other sites. Try Fullscreen off and Open in new tab, or use an MP4/WebM link.";
   e.classList.remove("hidden");
+  if(preIdx >= 0) setTimeout(() => { if(preIdx >= 0 && !pl.classList.contains("hidden")) advancePre(); }, 1800);
 });
 window.addEventListener("message", e => {
   if(e.origin !== "https://www.youtube.com") return;
   let d; try{ d = JSON.parse(e.data); }catch(x){ return; }
   if(e.source === yt.contentWindow){ if(ytEnded(d)) nextOrClose(); }
   else if(e.source === trY.contentWindow){
-    if(ytEnded(d)){ trY.classList.remove("on"); $("trSound").classList.add("hidden"); }
+    if(ytEnded(d)){ trY.classList.remove("on"); $("trSound").classList.add("hidden"); bgmRelease("trailer"); }
     else if(d.event === "onError") stopTrailer();
   }
 });
 document.addEventListener("keydown", e => {
   if(e.key !== "Escape" && !(e.key === "Backspace" && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))) return;
-  if(!pl.classList.contains("hidden")) return closePlay();
-  if(!$("rd").classList.contains("hidden")) return closeReader();
+  if(!pl.classList.contains("hidden")){ playSfx("back"); return closePlay(); }
+  if(!$("rd").classList.contains("hidden")){ playSfx("back"); return closeReader(); }
   if(!$("gm").classList.contains("hidden")) return;
   for(const id of ["pfModal", "colModal", "addModal", "ovModal"]){
-    if(!$(id).classList.contains("hidden")){ id === "ovModal" ? closeOverview() : id === "addModal" ? closeAdd() : $(id).classList.add("hidden"); if(id === "colModal") render(); return; }
+    if(!$(id).classList.contains("hidden")){ playSfx("back"); id === "ovModal" ? closeOverview() : id === "addModal" ? closeAdd() : $(id).classList.add("hidden"); if(id === "colModal") render(); return; }
   }
 });
 
@@ -1151,15 +1263,15 @@ function loadTrack(){
   $("mp").classList.remove("hidden"); document.body.classList.add("mpOn");
   aud.play().catch(() => {});
 }
-function startMusic(i){ stopTrailer(); mq = cur; mi = i; loadTrack(); }
+function startMusic(i){ stopTrailer(); bgmHold("music"); mq = cur; mi = i; loadTrack(); }
 function pauseMusic(){ if(mq) aud.pause(); }
 function closeMusic(){
-  aud.pause(); aud.removeAttribute("src"); aud.load();
+  bgmRelease("music"); aud.pause(); aud.removeAttribute("src"); aud.load();
   if(mUrl){ URL.revokeObjectURL(mUrl); mUrl = null; }
   if(mArt){ URL.revokeObjectURL(mArt); mArt = null; }
   mq = null; $("mp").classList.add("hidden"); document.body.classList.remove("mpOn");
 }
-aud.addEventListener("ended", () => { if(mq && mi + 1 < mq.episodes.length){ mi++; loadTrack(); } });
+aud.addEventListener("ended", () => { if(mq && mi + 1 < mq.episodes.length){ mi++; loadTrack(); } else bgmRelease("music"); });
 aud.addEventListener("error", () => { if(aud.getAttribute("src")) $("mpSub").textContent = "Couldn’t play this track. Check the link points straight at an audio file."; });
 $("mpNext").onclick = () => { if(mq && mi + 1 < mq.episodes.length){ mi++; loadTrack(); } };
 $("mpPrev").onclick = () => { if(mq && mi > 0){ mi--; loadTrack(); } };
@@ -1168,7 +1280,7 @@ $("mpClose").onclick = closeMusic;
 /* ---------- Game launcher (runs inside KitFlix) ---------- */
 function openGame(){
   const ep = cur.episodes[0]; if(!ep || !ep.link) return;
-  stopTrailer(); pauseMusic();
+  stopTrailer(); pauseMusic(); bgmHold("game");
   $("gmTitle").textContent = cur.title + (cur.console ? " · " + cur.console : "");
   $("gmOpen").href = ep.link; $("gmNote").classList.remove("hidden");
   const f = $("gmFrame"); f.onload = () => f.focus(); f.src = ep.link;
@@ -1176,11 +1288,11 @@ function openGame(){
 }
 function closeGame(){
   if($("gm").classList.contains("hidden")) return;
-  $("gm").classList.add("hidden"); $("gmFrame").onload = null; $("gmFrame").src = "about:blank";
+  bgmRelease("game"); $("gm").classList.add("hidden"); $("gmFrame").onload = null; $("gmFrame").src = "about:blank";
   if(document.fullscreenElement === $("gm")) document.exitFullscreen().catch(() => {});
   if(cur && !$("ovModal").classList.contains("hidden")) armTrailer();
 }
-$("gmBack").onclick = closeGame;
+$("gmBack").onclick = () => { playSfx("back"); closeGame(); };
 $("gmHide").onclick = () => $("gmNote").classList.add("hidden");
 $("gmFs").onclick = () => document.fullscreenElement === $("gm") ? document.exitFullscreen().catch(() => {}) : ($("gm").requestFullscreen && $("gm").requestFullscreen().catch(() => {}));
 document.addEventListener("fullscreenchange", () => { $("gmFs").textContent = document.fullscreenElement === $("gm") ? "Exit fullscreen" : "Fullscreen"; });
@@ -1201,7 +1313,7 @@ function closeReader(){
   $("rd").classList.add("hidden"); $("rdFrame").src = "about:blank"; closeReaderUrl();
   if(cur && !$("ovModal").classList.contains("hidden")) armTrailer();
 }
-$("rdBack").onclick = closeReader;
+$("rdBack").onclick = () => { playSfx("back"); closeReader(); };
 
 /* ---------- Remote / keyboard navigation (arrow keys, like a TV remote) ---------- */
 const FOCUSABLE = 'button, a[href], input, select, textarea, [tabindex="0"]';
@@ -1252,13 +1364,341 @@ function applyTv(on){
 }
 $("tvBtn").onclick = () => applyTv(!document.documentElement.classList.contains("tv"));
 
+/* ---------- Customize (per profile) ---------- */
+const THEMES = {netflix: ["Netflix Red", "#141414", "#e50914"], roku: ["Roku Purple", "#14071f", "#7b2cbf"], midnight: ["Midnight Blue", "#0a1020", "#2f6bff"]};
+const cu = () => (user.custom = user.custom || {});
+const cuc = () => (user && user.custom) || {};
+async function saveCu(msgEl){
+  try{ await putUser(user); if(msgEl) msgEl.textContent = ""; return true; }
+  catch(e){ if(msgEl) msgEl.textContent = "Couldn’t save. Your browser may be out of storage space."; return false; }
+}
+function E(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  for(const k in (attrs || {})){ const v = attrs[k]; if(k.startsWith("on")) e[k] = v; else if(k === "class") e.className = v; else if(v === true) e.setAttribute(k, ""); else if(v !== false && v != null) e.setAttribute(k, v); }
+  kids.flat().forEach(x => e.append(x)); return e;
+}
+const secEl = (title, desc, ...kids) => E("section", {}, E("h2", {}, title), E("p", {class: "sub"}, desc), ...kids);
+
+/* applying it */
+function applyTheme(){ document.documentElement.dataset.theme = cuc().theme || "netflix"; }
+function applyName(){
+  const n = (cuc().name || "").trim() || "KitFlix";
+  $("navLogo").textContent = n; document.title = n;
+}
+let bgUrl = null;
+function applyBg(){
+  if(bgUrl){ URL.revokeObjectURL(bgUrl); bgUrl = null; }
+  const fx = $("bgfx"), b = cuc().bg || {type: "none"};
+  fx.style.backgroundImage = ""; fx.style.backgroundColor = "";
+  fx.classList.toggle("on", b.type === "color" || b.type === "image");
+  if(b.type === "color"){ fx.style.backgroundColor = b.color || "#000000"; fx.style.setProperty("--dim", 0); }
+  else if(b.type === "image"){
+    const u = b.blob ? (bgUrl = URL.createObjectURL(b.blob)) : b.link;
+    fx.style.backgroundImage = "url(" + JSON.stringify(u) + ")"; fx.style.setProperty("--dim", (b.dim == null ? 55 : b.dim) / 100);
+  }
+}
+let fontFace = null;
+async function applyFont(){
+  const f = cuc().font, root = document.documentElement;
+  if(fontFace){ try{ document.fonts.delete(fontFace); }catch(e){} fontFace = null; }
+  if(f && f.blob){
+    try{
+      const ff = new FontFace("KitCustom", await f.blob.arrayBuffer()); await ff.load(); document.fonts.add(ff); fontFace = ff;
+      root.style.setProperty("--font", '"KitCustom","Bricolage Grotesque"'); return true;
+    }catch(e){ root.style.removeProperty("--font"); return false; }
+  }
+  root.style.removeProperty("--font"); return true;
+}
+let gifUrls = [];
+function drawGifs(){
+  gifUrls.forEach(URL.revokeObjectURL); gifUrls = [];
+  const box = $("gifs"); box.innerHTML = "";
+  const c = cuc(); if(!user || c.gifsOn === false || !(c.gifs || []).length || ($("app").classList.contains("hidden") && !inSetup)) return;
+  const size = {s: 80, m: 130, l: 210}[c.gifSize || "m"]; c.gifPos = c.gifPos || {};
+  c.gifs.forEach((g, i) => {
+    const img = document.createElement("img"); img.className = "sticker"; img.alt = ""; img.draggable = false; img.style.width = size + "px";
+    let u = g.link; if(g.blob){ u = URL.createObjectURL(g.blob); gifUrls.push(u); } img.src = u;
+    const pos = c.gifPos[g.id];
+    img.style.left = (pos ? pos.x * innerWidth : Math.max(0, innerWidth - (size + 16) * (i + 1))) + "px";
+    img.style.top = (pos ? pos.y * innerHeight : Math.max(70, innerHeight - size - 100)) + "px";
+    img.onpointerdown = e => {
+      e.preventDefault(); img.setPointerCapture(e.pointerId);
+      const ox = e.clientX - img.offsetLeft, oy = e.clientY - img.offsetTop;
+      img.onpointermove = ev => {
+        img.style.left = Math.min(innerWidth - 40, Math.max(40 - size, ev.clientX - ox)) + "px";
+        img.style.top = Math.min(innerHeight - 40, Math.max(0, ev.clientY - oy)) + "px";
+      };
+      img.onpointerup = async () => { img.onpointermove = img.onpointerup = null; c.gifPos[g.id] = {x: img.offsetLeft / innerWidth, y: img.offsetTop / innerHeight}; await saveCu(); };
+    };
+    box.appendChild(img);
+  });
+}
+/* browsing music: pauses while a trailer, a video, a song or a game is playing, then resumes */
+const bgm = $("bgm"); let bgmIdx = 0, bgmUrl = null, bgmPending = false; const bgmHolds = new Set();
+const bgmTracks = () => (cuc().music && cuc().music.tracks) || [];
+const bgmOn = () => !!(user && cuc().music && cuc().music.on !== false && bgmTracks().length);
+function updateBgmBtn(){
+  $("bgmBtn").classList.toggle("hidden", !user || !bgmTracks().length);
+  $("bgmBtn").setAttribute("aria-pressed", String(bgmOn()));
+}
+function bgmLoad(){
+  const t = bgmTracks(); if(!t.length) return; const k = t[bgmIdx % t.length];
+  if(bgmUrl){ URL.revokeObjectURL(bgmUrl); bgmUrl = null; }
+  if(k.blob){ bgmUrl = URL.createObjectURL(k.blob); bgm.src = bgmUrl; } else bgm.src = k.link;
+}
+function bgmSync(){
+  updateBgmBtn();
+  const want = bgmOn() && !bgmHolds.size && (!$("app").classList.contains("hidden") || inSetup);
+  if(!want){ if(!bgm.paused) bgm.pause(); return; }
+  if(!bgm.getAttribute("src")) bgmLoad();
+  const v = cuc().music.vol; bgm.volume = v == null ? .4 : v;
+  const p = bgm.play(); if(p && p.then) p.then(() => { bgmPending = false; }).catch(() => { bgmPending = true; });
+}
+function bgmHold(k){ bgmHolds.add(k); bgmSync(); }
+function bgmRelease(k){ if(bgmHolds.delete(k)) bgmSync(); }
+function bgmReset(){
+  bgm.pause(); bgm.removeAttribute("src"); bgm.load();
+  if(bgmUrl){ URL.revokeObjectURL(bgmUrl); bgmUrl = null; }
+  bgmIdx = 0; bgm.loop = bgmTracks().length === 1; bgmSync();
+}
+bgm.addEventListener("ended", () => { bgmIdx++; bgmLoad(); bgmSync(); });
+bgm.addEventListener("error", () => { if(bgm.getAttribute("src") && bgmTracks().length > 1) setTimeout(() => { bgmIdx++; bgmLoad(); bgmSync(); }, 800); });
+["pointerdown", "keydown"].forEach(ev => document.addEventListener(ev, () => { if(bgmPending) bgmSync(); }, true));
+$("bgmBtn").onclick = async () => { const m = cu().music = cu().music || {on: true, vol: .4, tracks: []}; m.on = m.on === false; await saveCu(); bgmSync(); };
+/* sound effects: your own MP3s for click, play, back and login */
+const SFX_LABELS = {
+  click: ["Click sound", "Plays when you click or tap something."],
+  play: ["Play sound", "Plays when you press Play (or Read, or Play game)."],
+  back: ["Back sound", "Plays when you press Back, close a title, or press Esc."],
+  login: ["Login sound", "Plays when you select your profile."]
+};
+const sfxUrls = new Map(); let lastSfxAt = 0;
+function sfxSrc(s){
+  if(s.link) return s.link;
+  let u = sfxUrls.get(s.blob); if(!u){ u = URL.createObjectURL(s.blob); sfxUrls.set(s.blob, u); } return u;
+}
+function clearSfx(){ sfxUrls.forEach(u => URL.revokeObjectURL(u)); sfxUrls.clear(); }
+function playSfx(kind){
+  const c = cuc().sfx; if(!c || c.on === false || !c[kind]) return;
+  if(kind !== "click") lastSfxAt = performance.now();
+  try{ const a = new Audio(sfxSrc(c[kind])); a.volume = c.vol == null ? .7 : c.vol; const p = a.play(); if(p && p.catch) p.catch(() => {}); }catch(e){}
+}
+/* the click sound skips clicks that already made a play/back/login sound */
+document.addEventListener("click", e => {
+  if(!user || !e.target.closest || !e.target.closest('button, a[href], [role="button"], select, label, input[type="checkbox"], input[type="radio"]')) return;
+  setTimeout(() => { if(performance.now() - lastSfxAt > 150) playSfx("click"); }, 0);
+}, true);
+
+function applyCustom(){ applyTheme(); applyName(); applyBg(); applyFont(); drawGifs(); bgmReset(); }
+$("cuBtn").onclick = () => { $("acctMenu").classList.add("hidden"); go("customize"); };
+
+/* the Customize page */
+function customizePage(onReset){
+  const c = cu(); c.music = c.music || {on: true, vol: .4, tracks: []}; c.gifs = c.gifs || []; c.gifPos = c.gifPos || {}; c.bg = c.bg || {type: "none", dim: 55};
+  const root = E("div", {class: "cu"}, E("h1", {}, "Customize"), E("p", {class: "sub"}, "Changes apply to " + user.name + "’s profile and are saved in this browser."));
+
+  /* name */
+  const nameIn = E("input", {type: "text", maxlength: "18", value: c.name || "KitFlix", "aria-label": "Site name"}), nameMsg = E("p", {class: "err", role: "alert"});
+  const setName = async v => { c.name = v; if(await saveCu(nameMsg)) applyName(); };
+  root.append(secEl("Site name", "Replace the KitFlix name in the top bar.",
+    E("div", {class: "line"}, nameIn,
+      E("button", {class: "btn red", onclick: () => setName(nameIn.value.trim() || "KitFlix")}, "Save name"),
+      E("button", {class: "btn ghost", onclick: () => { nameIn.value = "KitFlix"; setName("KitFlix"); }}, "Reset")), nameMsg));
+
+  /* theme */
+  const tbox = E("div", {class: "themes", role: "group", "aria-label": "Theme"});
+  const markThemes = () => tbox.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === (c.theme || "netflix"))));
+  Object.entries(THEMES).forEach(([id, [n, a, b]]) => tbox.appendChild(E("button", {class: "theme", "data-id": id,
+    onclick: async () => { c.theme = id; await saveCu(); applyTheme(); markThemes(); }},
+    E("div", {class: "sw", style: "background:linear-gradient(135deg," + a + " 40%," + b + ")"}), E("span", {}, n))));
+  markThemes();
+  root.append(secEl("Theme", "Pick the colours for the whole site.", tbox));
+
+  /* background */
+  const bgMsg = E("p", {class: "err", role: "alert"}), bgNow = E("p", {class: "note"});
+  const bgLabel = () => { bgNow.textContent = "Current background: " + (c.bg.type === "color" ? "solid colour" : c.bg.type === "image" ? (c.bg.blob ? "your image or GIF" : "image or GIF link") : "default"); };
+  const setBg = async b => { c.bg = Object.assign({dim: c.bg.dim}, b); if(await saveCu(bgMsg)) { applyBg(); bgLabel(); } };
+  const colorIn = E("input", {type: "color", value: c.bg.color || "#1a1a2e", "aria-label": "Background colour",
+    oninput: () => { const fx = $("bgfx"); fx.classList.add("on"); fx.style.backgroundImage = ""; fx.style.backgroundColor = colorIn.value; fx.style.setProperty("--dim", 0); },
+    onchange: () => setBg({type: "color", color: colorIn.value})});
+  const bgLink = E("input", {type: "url", placeholder: "Image or GIF link", "aria-label": "Background image link"});
+  const bgFile = E("input", {type: "file", accept: "image/*", "aria-label": "Background image file",
+    onchange: () => { const f = bgFile.files[0]; if(f) setBg({type: "image", blob: f}); }});
+  const dim = E("input", {type: "range", min: "0", max: "90", value: String(c.bg.dim == null ? 55 : c.bg.dim), "aria-label": "Darken background",
+    oninput: () => $("bgfx").style.setProperty("--dim", dim.value / 100), onchange: async () => { c.bg.dim = +dim.value; await saveCu(bgMsg); }});
+  bgLabel();
+  root.append(secEl("Background", "Use a colour, or an image or GIF from a link or a file on this device.",
+    E("div", {class: "line"}, E("button", {class: "btn ghost", onclick: () => setBg({type: "none"})}, "Default"), E("label", {}, "Colour ", colorIn)),
+    E("div", {class: "line"}, bgLink, E("button", {class: "btn ghost", onclick: () => { const l = bgLink.value.trim(); if(!validLink(l)) return bgMsg.textContent = "Enter a full link starting with http:// or https://."; setBg({type: "image", link: l}); }}, "Use link")),
+    E("div", {class: "line"}, bgFile, E("label", {}, "Darken ", dim)), bgNow, bgMsg));
+
+  /* font */
+  const fontMsg = E("p", {class: "err", role: "alert"}), fontNow = E("p", {class: "note"}, c.font ? "Current font: " + c.font.name : "Using the default font.");
+  const fontFile = E("input", {type: "file", accept: ".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2", "aria-label": "Font file",
+    onchange: async () => {
+      const f = fontFile.files[0]; if(!f) return;
+      const prev = c.font; c.font = {blob: f, name: f.name};
+      if(!(await applyFont())){ c.font = prev; await applyFont(); fontMsg.textContent = "That file couldn’t be loaded as a font."; return; }
+      if(await saveCu(fontMsg)) fontNow.textContent = "Current font: " + f.name;
+    }});
+  root.append(secEl("Font", "Choose a font file from your device (.ttf, .otf, .woff or .woff2). It applies everywhere in KitFlix.",
+    E("div", {class: "line"}, fontFile, E("button", {class: "btn ghost", onclick: async () => { delete c.font; fontFile.value = ""; await applyFont(); await saveCu(fontMsg); fontNow.textContent = "Using the default font."; }}, "Reset font")), fontNow, fontMsg));
+
+  /* gifs */
+  const gMsg = E("p", {class: "err", role: "alert"}), gList = E("div", {class: "tlist"}), gAddLine = E("div", {class: "line"});
+  let thumbs = [];
+  const drawGl = () => {
+    thumbs.forEach(URL.revokeObjectURL); thumbs = []; gList.innerHTML = "";
+    c.gifs.forEach((g, i) => {
+      let u = g.link; if(g.blob){ u = URL.createObjectURL(g.blob); thumbs.push(u); }
+      gList.appendChild(E("div", {class: "trow"}, E("img", {src: u, alt: ""}), E("span", {}, g.blob ? "GIF from this device" : g.link),
+        E("button", {"aria-label": "Remove GIF", onclick: async () => { c.gifs.splice(i, 1); delete c.gifPos[g.id]; await saveCu(gMsg); drawGl(); drawGifs(); }}, "Remove")));
+    });
+    gAddLine.classList.toggle("hidden", c.gifs.length >= 8);
+  };
+  const gLink = E("input", {type: "url", placeholder: "GIF link", "aria-label": "GIF link"}), gFile = E("input", {type: "file", accept: "image/*", "aria-label": "GIF file"});
+  gAddLine.append(gLink, gFile, E("button", {class: "btn ghost", onclick: async () => {
+    const l = gLink.value.trim(), f = gFile.files[0];
+    if(l){ if(!validLink(l)) return gMsg.textContent = "Enter a full link starting with http:// or https://."; c.gifs.push({id: uid(), link: l}); }
+    else if(f) c.gifs.push({id: uid(), blob: f});
+    else return gMsg.textContent = "Add a link or choose a file.";
+    gLink.value = ""; gFile.value = ""; await saveCu(gMsg); drawGl(); drawGifs();
+  }}, "Add GIF"));
+  const gSize = E("select", {"aria-label": "GIF size", onchange: async () => { c.gifSize = gSize.value; await saveCu(gMsg); drawGifs(); }},
+    E("option", {value: "s"}, "Small"), E("option", {value: "m"}, "Medium"), E("option", {value: "l"}, "Large")); gSize.value = c.gifSize || "m";
+  const gOn = E("input", {type: "checkbox", checked: c.gifsOn !== false, onchange: async () => { c.gifsOn = gOn.checked; await saveCu(gMsg); drawGifs(); }});
+  drawGl();
+  root.append(secEl("GIFs", "Add up to 8 GIFs that float on top of KitFlix. Drag them anywhere on the page.", gList, gAddLine,
+    E("div", {class: "line"}, E("label", {}, gOn, " Show GIFs"), E("label", {}, "Size ", gSize),
+      E("button", {class: "btn ghost", onclick: async () => { c.gifPos = {}; await saveCu(gMsg); drawGifs(); }}, "Reset positions")), gMsg));
+
+  /* browsing music */
+  const mMsg = E("p", {class: "err", role: "alert"}), mList = E("div", {class: "tlist"}), m = c.music;
+  const drawMl = () => {
+    mList.innerHTML = "";
+    m.tracks.forEach((t, i) => mList.appendChild(E("div", {class: "trow"}, E("span", {}, (i + 1) + ". " + t.name), E("small", {}, t.blob ? "this device" : "link"),
+      E("button", {"aria-label": "Remove " + t.name, onclick: async () => { m.tracks.splice(i, 1); await saveCu(mMsg); drawMl(); bgmReset(); }}, "Remove"))));
+    mAdd.classList.toggle("hidden", m.tracks.length >= 20);
+  };
+  const mName = E("input", {type: "text", placeholder: "Name (optional)", "aria-label": "Track name"}), mLink = E("input", {type: "url", placeholder: "Audio link (MP3)", "aria-label": "Audio link"});
+  const mFile = E("input", {type: "file", accept: "audio/*,.mp3", multiple: true, "aria-label": "Audio files"});
+  const mAdd = E("div", {class: "line"}, mName, mLink, mFile, E("button", {class: "btn ghost", onclick: async () => {
+    const l = mLink.value.trim(), files = [...mFile.files], room = 20 - m.tracks.length;
+    if(l){ if(!validLink(l)) return mMsg.textContent = "Enter a full link starting with http:// or https://."; m.tracks.push({id: uid(), name: mName.value.trim() || "Track " + (m.tracks.length + 1), link: l}); }
+    else if(files.length) files.slice(0, room).forEach(f => m.tracks.push({id: uid(), name: (files.length === 1 && mName.value.trim()) || cleanName(f.name) || "Track", blob: f}));
+    else return mMsg.textContent = "Add a link or choose audio files.";
+    mName.value = ""; mLink.value = ""; mFile.value = ""; await saveCu(mMsg); drawMl(); bgmReset();
+  }}, "Add music"));
+  const mOn = E("input", {type: "checkbox", checked: m.on !== false, onchange: async () => { m.on = mOn.checked; await saveCu(mMsg); bgmSync(); }});
+  const vol = E("input", {type: "range", min: "0", max: "100", value: String(Math.round((m.vol == null ? .4 : m.vol) * 100)), "aria-label": "Music volume",
+    oninput: () => { bgm.volume = vol.value / 100; }, onchange: async () => { m.vol = vol.value / 100; await saveCu(mMsg); }});
+  drawMl();
+  root.append(secEl("Browsing music", "Music that plays while you browse. It pauses when a trailer starts or you press play on something, and carries on when you’re back. Browsers only allow sound after you click or tap, so it starts on your first click.",
+    mList, mAdd, E("div", {class: "line"}, E("label", {}, mOn, " Play browsing music"), E("label", {}, "Volume ", vol)), mMsg));
+
+  /* sound effects */
+  const sx = c.sfx = c.sfx || {on: true, vol: .7}, sMsg = E("p", {class: "err", role: "alert"}), sList = E("div", {class: "tlist"});
+  const drawSl = () => {
+    sList.innerHTML = "";
+    Object.entries(SFX_LABELS).forEach(([k, [label, desc]]) => {
+      const cur2 = sx[k];
+      const file = E("input", {type: "file", accept: "audio/mpeg,audio/*,.mp3", "aria-label": label + " file",
+        onchange: async () => { const f = file.files[0]; if(!f) return; sx[k] = {blob: f, name: f.name}; await saveCu(sMsg); drawSl(); }});
+      const link = E("input", {type: "url", placeholder: "or an MP3 link", "aria-label": label + " link"});
+      sList.appendChild(E("div", {class: "sfxrow"}, E("b", {}, label + " "), E("small", {}, desc),
+        E("p", {class: "note"}, cur2 ? "Current: " + (cur2.name || cur2.link) : "No sound set."),
+        E("div", {class: "line"}, file, link,
+          E("button", {class: "btn ghost", onclick: async () => {
+            const l = link.value.trim(); if(!validLink(l)) return sMsg.textContent = "Enter a full link starting with http:// or https://.";
+            sx[k] = {link: l, name: l}; await saveCu(sMsg); drawSl();
+          }}, "Use link"),
+          E("button", {class: "btn ghost", onclick: () => { lastSfxAt = performance.now(); const was = sx.on; sx.on = true; playSfx(k); sx.on = was; }}, "Test"),
+          E("button", {class: "btn ghost", onclick: async () => { delete sx[k]; await saveCu(sMsg); drawSl(); }}, "Remove"))));
+    });
+  };
+  const sOn = E("input", {type: "checkbox", checked: sx.on !== false, onchange: async () => { sx.on = sOn.checked; await saveCu(sMsg); }});
+  const sVol = E("input", {type: "range", min: "0", max: "100", value: String(Math.round((sx.vol == null ? .7 : sx.vol) * 100)), "aria-label": "Sound effects volume",
+    onchange: async () => { sx.vol = sVol.value / 100; await saveCu(sMsg); }});
+  drawSl();
+  root.append(secEl("Sound effects", "Pick your own MP3s for clicks, pressing Play, pressing Back and logging in. Leave a slot empty for no sound.",
+    sList, E("div", {class: "line"}, E("label", {}, sOn, " Play sound effects"), E("label", {}, "Volume ", sVol)), sMsg));
+
+  /* reset */
+  root.append(E("div", {class: "line"}, E("button", {class: "btn danger", onclick: async () => {
+    if(!confirm("Reset all customization for " + user.name + "?")) return;
+    user.custom = {}; clearSfx(); await saveCu(); applyCustom(); (onReset || render)();
+  }}, "Reset all customization")));
+  return root;
+}
+
+/* ---------- First-run setup (only the very first time the site is opened) ---------- */
+let inSetup = false, suDraft = null;
+function startSetup(){
+  inSetup = true;
+  $("profiles").classList.add("hidden"); $("app").classList.add("hidden"); $("setup").classList.remove("hidden");
+  suDraft = {avatar: {type: "preset", id: PRESETS[Math.floor(Math.random() * PRESETS.length)].id}};
+  suStepProfile();
+}
+function suStepProfile(){
+  const body = $("suBody"); body.innerHTML = ""; $("suStep").textContent = "Step 1 of 2";
+  const prev = E("div", {class: "av big"}); paintAv(prev, suDraft.avatar, "new");
+  const name = E("input", {id: "suName", type: "text", maxlength: "24", autocomplete: "off", placeholder: "Your name"});
+  const err = E("p", {class: "err", role: "alert"}), presets = E("div", {class: "presets", role: "group", "aria-label": "Choose a picture"});
+  const file = E("input", {type: "file", accept: "image/*", "aria-label": "Upload a picture", onchange: async () => {
+    const f = file.files[0]; if(!f) return; suDraft.avatar = {type: "image", blob: await squareAvatar(f)}; drawP(); paintAv(prev, suDraft.avatar, "x");
+  }});
+  const drawP = () => {
+    presets.innerHTML = "";
+    PRESETS.forEach(pr => {
+      const b = E("button", {"aria-label": "Picture " + pr.id, "aria-pressed": String(!suDraft.avatar.blob && suDraft.avatar.id === pr.id),
+        onclick: () => { suDraft.avatar = {type: "preset", id: pr.id}; file.value = ""; drawP(); paintAv(prev, suDraft.avatar, "x"); }}, pr.e);
+      b.style.background = pr.bg; presets.appendChild(b);
+    });
+  };
+  drawP();
+  const next = async () => {
+    const n = name.value.trim(); if(!n){ err.textContent = "Enter a name to continue."; return; }
+    try{ const np = {email: "p-" + uid(), name: n, avatar: suDraft.avatar, collections: [], created: Date.now()}; await putUser(np); user = np; }
+    catch(e){ err.textContent = "Couldn’t save this profile. Your browser may be out of storage space."; return; }
+    suStepCustomize();
+  };
+  name.addEventListener("keydown", e => { if(e.key === "Enter") next(); });
+  body.append(E("div", {class: "sustep1"}, E("h1", {}, "Welcome to KitFlix"), E("p", {class: "sub"}, "Let’s get set up. First, create your profile."),
+    E("div", {class: "pfedit"}, prev, E("div", {}, E("label", {for: "suName"}, "Name"), name)),
+    E("label", {}, "Profile picture"), presets, E("label", {for: "suFile"}, "Or upload your own"), file, err,
+    E("div", {style: "margin-top:1.2rem"}, E("button", {class: "btn red", onclick: next}, "Continue"))));
+  file.id = "suFile"; name.focus();
+}
+function suStepCustomize(){
+  const body = $("suBody"); body.innerHTML = ""; $("suStep").textContent = "Step 2 of 2";
+  body.append(
+    E("div", {class: "sutop"}, E("div", {}, E("h1", {}, "Make it yours"),
+      E("p", {class: "sub"}, "Everything here is optional, and you can change any of it later from your profile menu → Customize. GIFs and music preview here too.")),
+      E("button", {class: "btn ghost", onclick: finishSetup}, "Skip for now")),
+    customizePage(() => suStepCustomize()),
+    E("div", {class: "sufoot"}, E("button", {class: "btn red", onclick: finishSetup}, "Finish setup")));
+  scrollTo(0, 0);
+}
+function finishSetup(){
+  try{ localStorage.setItem("kitflix_setup_done", "1"); }catch(e){}
+  inSetup = false; user = null; bgmHolds.clear(); clearSfx(); applyCustom();
+  $("setup").classList.add("hidden"); scrollTo(0, 0); showProfiles();
+}
+async function bootEntry(){
+  let done = false; try{ done = localStorage.getItem("kitflix_setup_done") === "1"; }catch(e){}
+  const list = await sortedUsers();
+  if(!done && !list.length) return startSetup();
+  if(!done){ try{ localStorage.setItem("kitflix_setup_done", "1"); }catch(e){} }
+  showProfiles();
+}
+
 /* ---------- Boot ---------- */
 (async () => {
   let tv = null; try{ tv = localStorage.getItem("kitflix_tv"); }catch(e){}
   applyTv(tv === null ? /SmartTV|Tizen|Web0S|WebOS|AppleTV|CrKey|AFT|Roku|Silk/i.test(navigator.userAgent) : tv === "1");
   db = await openDB();
   try{ localStorage.removeItem("kitflix_session"); }catch(e){}
-  showProfiles();
+  bootEntry();
 })();
 </script>
 </body>
