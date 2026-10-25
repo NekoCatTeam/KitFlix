@@ -229,6 +229,7 @@ html[data-theme="midnight"]{--ink:#0a1020;--panel:#111b33;--line:#243659;--paper
 /* ---- customize: background, stickers, page ---- */
 #bgfx{position:fixed;inset:0;z-index:-1;background-size:cover;background-position:center;display:none}
 #bgfx.on{display:block}
+#bgfx video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #bgfx::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,var(--dim,.5))}
 #gifs{position:fixed;inset:0;z-index:9;pointer-events:none}
 .sticker{position:absolute;pointer-events:auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5));max-width:40vw}
@@ -335,12 +336,21 @@ body.mpOn #gmenu{padding-bottom:5.5rem}
 .gmdone{display:flex;justify-content:flex-end;margin-top:.4rem}
 .gmdone button{background:#00a9c0;color:#fff;border:0;border-radius:99px;padding:.5rem 2rem;font-weight:600}
 .gmdone button:focus-visible{outline:3px solid #00c3e3;outline-offset:2px}
-@media (max-width:560px){.split@media (max-width:560px){.split{grid-template-columns:1fr}}
+.newdot{background:var(--red);color:#fff;border-radius:99px;font-size:.7rem;padding:.05rem .5rem;margin-left:.4rem;vertical-align:middle;font-weight:700}
+.ullist{margin:.5rem 0 0;padding-left:1.2rem}
+.ullist li{margin:.3rem 0}
+.crhead{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+.crname{margin:0;font-size:clamp(3rem,11vw,7rem);letter-spacing:-.04em;line-height:1;font-weight:800}
+.crpfp{width:clamp(120px,22vw,230px);aspect-ratio:1;border-radius:50%;object-fit:cover;flex:none;border:4px solid var(--red);background:var(--panel)}
+.crfb{display:grid;place-items:center;background:var(--red);font-size:4rem;font-weight:800;color:#fff}
+.crlinks{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:2rem}
+.crlinks a{text-decoration:none;display:inline-block;padding:.7rem 1.6rem;font-size:1.05rem}
+@media (max-width:560px){.split{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div id="bgfx"></div><div id="gifs"></div><audio id="bgm" preload="none"></audio>
+<div id="bgfx"><video id="bgvid" class="hidden" muted loop playsinline autoplay aria-hidden="true" tabindex="-1"></video></div><div id="gifs"></div><audio id="bgm" preload="none"></audio>
 
 <section id="profiles" class="hidden">
   <span class="logo pflogo">KitFlix</span>
@@ -384,7 +394,7 @@ body.mpOn #gmenu{padding-bottom:5.5rem}
     <button class="btn red" id="addBtn">+ Add title</button>
     <div class="acct">
       <button class="avatar" id="acctBtn" aria-haspopup="true" aria-expanded="false" aria-label="Account menu"></button>
-      <div class="menu hidden" id="acctMenu"><p id="who"></p><button class="btn ghost" id="cuBtn" style="margin-bottom:.5rem">Customize</button><button class="btn ghost" id="gameBtn" style="margin-bottom:.5rem">Game Menu</button><button class="btn ghost" id="dlBtn" style="margin-bottom:.5rem">Download</button><button class="btn ghost" id="editBtn" style="margin-bottom:.5rem">Edit profile</button><button class="btn ghost" id="tvBtn" style="margin-bottom:.5rem">TV mode: off</button><button class="btn ghost" id="outBtn">Switch profile</button></div>
+      <div class="menu hidden" id="acctMenu"><p id="who"></p><button class="btn ghost" id="cuBtn" style="margin-bottom:.5rem">Customize</button><button class="btn ghost" id="gameBtn" style="margin-bottom:.5rem">Game Menu</button><button class="btn ghost" id="dlBtn" style="margin-bottom:.5rem">Download</button><button class="btn ghost" id="logBtn" style="margin-bottom:.5rem">Update Log <span class="newdot hidden" id="logNew">New</span></button><button class="btn ghost" id="faqBtn" style="margin-bottom:.5rem">Common Questions</button><button class="btn ghost" id="crBtn" style="margin-bottom:.5rem">Credits</button><button class="btn ghost" id="editBtn" style="margin-bottom:.5rem">Edit profile</button><button class="btn ghost" id="tvBtn" style="margin-bottom:.5rem">TV mode: off</button><button class="btn ghost" id="outBtn">Switch profile</button></div>
     </div>
   </nav>
   <main id="main"></main>
@@ -562,11 +572,12 @@ const uid = () => crypto.randomUUID();
 /* ---------- IndexedDB ---------- */
 function openDB(){
   return new Promise((res, rej) => {
-    const r = indexedDB.open("kitflix", 1);
+    const r = indexedDB.open("kitflix", 2);
     r.onupgradeneeded = () => {
       const d = r.result;
-      d.createObjectStore("users", {keyPath: "email"});
-      d.createObjectStore("movies", {keyPath: "id"}).createIndex("owner", "owner");
+      if(!d.objectStoreNames.contains("users")) d.createObjectStore("users", {keyPath: "email"});
+      if(!d.objectStoreNames.contains("movies")) d.createObjectStore("movies", {keyPath: "id"}).createIndex("owner", "owner");
+      if(!d.objectStoreNames.contains("blobs")) d.createObjectStore("blobs");
     };
     r.onsuccess = () => res(r.result);
     r.onerror = () => rej(r.error);
@@ -582,6 +593,9 @@ const getItems = o => tx("movies", "readonly", s => s.index("owner").getAll(o));
 const putItem = m => tx("movies", "readwrite", s => s.put(m));
 const delItem = id => tx("movies", "readwrite", s => s.delete(id));
 const saveUser = () => putUser(user);
+const putBlob = (k, b) => tx("blobs", "readwrite", s => s.put(b, k));
+const getBlob = k => tx("blobs", "readonly", s => s.get(k));
+const delBlob = k => tx("blobs", "readwrite", s => s.delete(k));
 const getAllUsers = () => tx("users", "readonly", s => s.getAll());
 const delUser = id => tx("users", "readwrite", s => s.delete(id));
 
@@ -707,7 +721,7 @@ $("pfDel").onclick = async () => {
   if(!pf || !confirm("Delete “" + pf.name + "”? Its library and collections will be removed from this browser.")) return;
   const gone = pf, mine = user && gone === user;
   for(const m of await getItems(gone.email)) await delItem(m.id);
-  await delUser(gone.email); $("pfModal").classList.add("hidden");
+  await delUser(gone.email); await delBlob("bgvideo:" + gone.email).catch(() => {}); $("pfModal").classList.add("hidden");
   if(mine) switchProfile(); else { profList = await sortedUsers(); if(!profList.length) managing = false; drawProfiles(); }
 };
 
@@ -720,7 +734,7 @@ function pickHero(){
 }
 async function showApp(){
   $("profiles").classList.add("hidden"); $("app").classList.remove("hidden");
-  $("who").textContent = user.name; paintNavAvatar(); applyCustom();
+  $("who").textContent = user.name; paintNavAvatar(); applyCustom(); refreshLogBadge();
   items = (await getItems(user.email)).filter(m => m.episodes).sort((a, b) => b.added - a.added);
   filter = "all"; viewCol = null; $("search").value = ""; pickHero(); render();
   if(document.documentElement.classList.contains("tv")){ const f = document.querySelector(".bill .btn") || document.querySelector(".links button"); if(f) f.focus({preventScroll: true}); }
@@ -809,6 +823,9 @@ function buildPage(main, q, hit, col){
   const lib = items.filter(m => m.kind !== "game"); /* games live in the Game Menu */
   if(filter === "customize" && !q){ main.appendChild(customizePage()); return; }
   if(filter === "download" && !q){ main.appendChild(downloadPage()); return; }
+  if(filter === "updates" && !q){ main.appendChild(updatesPage()); return; }
+  if(filter === "faq" && !q){ main.appendChild(faqPage()); return; }
+  if(filter === "credits" && !q){ main.appendChild(creditsPage()); return; }
   const cols = user.collections;
   if(!lib.length && !cols.length){
     main.append(pageHead("Welcome to KitFlix"), msgEl("Your library is empty. Add a movie, show, book, song or album to get started. Games live in the Game Menu (profile menu).", true)); return;
@@ -1478,16 +1495,29 @@ function applyName(){
   const n = (cuc().name || "").trim() || "KitFlix";
   $("navLogo").textContent = n; document.title = n;
 }
-let bgUrl = null;
-function applyBg(){
+let bgUrl = null, bgToken = 0;
+async function applyBg(){
+  const my = ++bgToken;
   if(bgUrl){ URL.revokeObjectURL(bgUrl); bgUrl = null; }
-  const fx = $("bgfx"), b = cuc().bg || {type: "none"};
+  const fx = $("bgfx"), vd = $("bgvid"), b = cuc().bg || {type: "none"};
+  vd.pause(); vd.removeAttribute("src"); vd.load(); vd.classList.add("hidden");
   fx.style.backgroundImage = ""; fx.style.backgroundColor = "";
-  fx.classList.toggle("on", b.type === "color" || b.type === "image");
+  fx.classList.toggle("on", b.type === "color" || b.type === "image" || b.type === "video");
+  const dim = (b.dim == null ? 55 : b.dim) / 100;
   if(b.type === "color"){ fx.style.backgroundColor = b.color || "#000000"; fx.style.setProperty("--dim", 0); }
   else if(b.type === "image"){
     const u = b.blob ? (bgUrl = URL.createObjectURL(b.blob)) : b.link;
-    fx.style.backgroundImage = "url(" + JSON.stringify(u) + ")"; fx.style.setProperty("--dim", (b.dim == null ? 55 : b.dim) / 100);
+    fx.style.backgroundImage = "url(" + JSON.stringify(u) + ")"; fx.style.setProperty("--dim", dim);
+  } else if(b.type === "video"){
+    let u = b.link;
+    if(b.store){
+      let blob = null; try{ blob = await getBlob("bgvideo:" + user.email); }catch(e){}
+      if(my !== bgToken) return;
+      if(!blob){ fx.classList.remove("on"); return; }
+      u = bgUrl = URL.createObjectURL(blob);
+    }
+    vd.muted = true; vd.defaultMuted = true; vd.src = u; vd.classList.remove("hidden"); fx.style.setProperty("--dim", dim);
+    const p = vd.play(); if(p && p.catch) p.catch(() => {});
   }
 }
 let fontFace = null;
@@ -1609,20 +1639,27 @@ function customizePage(onReset){
 
   /* background */
   const bgMsg = E("p", {class: "err", role: "alert"}), bgNow = E("p", {class: "note"});
-  const bgLabel = () => { bgNow.textContent = "Current background: " + (c.bg.type === "color" ? "solid colour" : c.bg.type === "image" ? (c.bg.blob ? "your image or GIF" : "image or GIF link") : "default"); };
-  const setBg = async b => { c.bg = Object.assign({dim: c.bg.dim}, b); if(await saveCu(bgMsg)) { applyBg(); bgLabel(); } };
+  const bgLabel = () => { bgNow.textContent = "Current background: " + (c.bg.type === "color" ? "solid colour" : c.bg.type === "image" ? (c.bg.blob ? "your image or GIF" : "image or GIF link") : c.bg.type === "video" ? (c.bg.store ? "your video wallpaper (muted)" : "video wallpaper link (muted)") : "default"); };
+  const setBg = async b => {
+    if(c.bg.type === "video" && c.bg.store && !(b.type === "video" && b.store)) delBlob("bgvideo:" + user.email).catch(() => {});
+    c.bg = Object.assign({dim: c.bg.dim}, b); if(await saveCu(bgMsg)) { applyBg(); bgLabel(); }
+  };
+  const setVideoFile = async f => {
+    try{ await putBlob("bgvideo:" + user.email, f); }catch(e){ bgMsg.textContent = "Couldn’t save this video. Your browser may be out of storage space."; return; }
+    setBg({type: "video", store: true, name: f.name});
+  };
   const colorIn = E("input", {type: "color", value: c.bg.color || "#1a1a2e", "aria-label": "Background colour",
-    oninput: () => { const fx = $("bgfx"); fx.classList.add("on"); fx.style.backgroundImage = ""; fx.style.backgroundColor = colorIn.value; fx.style.setProperty("--dim", 0); },
+    oninput: () => { const fx = $("bgfx"); $("bgvid").pause(); $("bgvid").classList.add("hidden"); fx.classList.add("on"); fx.style.backgroundImage = ""; fx.style.backgroundColor = colorIn.value; fx.style.setProperty("--dim", 0); },
     onchange: () => setBg({type: "color", color: colorIn.value})});
-  const bgLink = E("input", {type: "url", placeholder: "Image or GIF link", "aria-label": "Background image link"});
-  const bgFile = E("input", {type: "file", accept: "image/*", "aria-label": "Background image file",
-    onchange: () => { const f = bgFile.files[0]; if(f) setBg({type: "image", blob: f}); }});
+  const bgLink = E("input", {type: "url", placeholder: "Image, GIF or MP4 link", "aria-label": "Background link"});
+  const bgFile = E("input", {type: "file", accept: "image/*,video/mp4,video/*,.mp4", "aria-label": "Background image, GIF or MP4 file",
+    onchange: () => { const f = bgFile.files[0]; if(!f) return; if(/^video\//.test(f.type) || /\.mp4$/i.test(f.name)) setVideoFile(f); else setBg({type: "image", blob: f}); }});
   const dim = E("input", {type: "range", min: "0", max: "90", value: String(c.bg.dim == null ? 55 : c.bg.dim), "aria-label": "Darken background",
     oninput: () => $("bgfx").style.setProperty("--dim", dim.value / 100), onchange: async () => { c.bg.dim = +dim.value; await saveCu(bgMsg); }});
   bgLabel();
-  root.append(secEl("Background", "Use a colour, or an image or GIF from a link or a file on this device.",
+  root.append(secEl("Background", "Use a colour, an image or GIF, or an MP4 video (it plays on a loop and is always muted), from a link or a file on this device. Short clips work best, since long videos use more storage and battery.",
     E("div", {class: "line"}, E("button", {class: "btn ghost", onclick: () => setBg({type: "none"})}, "Default"), E("label", {}, "Colour ", colorIn)),
-    E("div", {class: "line"}, bgLink, E("button", {class: "btn ghost", onclick: () => { const l = bgLink.value.trim(); if(!validLink(l)) return bgMsg.textContent = "Enter a full link starting with http:// or https://."; setBg({type: "image", link: l}); }}, "Use link")),
+    E("div", {class: "line"}, bgLink, E("button", {class: "btn ghost", onclick: () => { const l = bgLink.value.trim(); if(!validLink(l)) return bgMsg.textContent = "Enter a full link starting with http:// or https://."; setBg({type: isVideoLink(l) ? "video" : "image", link: l}); }}, "Use link")),
     E("div", {class: "line"}, bgFile, E("label", {}, "Darken ", dim)), bgNow, bgMsg));
 
   /* font */
@@ -1719,7 +1756,7 @@ function customizePage(onReset){
   /* reset */
   root.append(E("div", {class: "line"}, E("button", {class: "btn danger", onclick: async () => {
     if(!confirm("Reset all customization for " + user.name + "?")) return;
-    user.custom = {}; clearSfx(); await saveCu(); applyCustom(); (onReset || render)();
+    delBlob("bgvideo:" + user.email).catch(() => {}); user.custom = {}; clearSfx(); await saveCu(); applyCustom(); (onReset || render)();
   }}, "Reset all customization")));
   return root;
 }
@@ -1821,6 +1858,105 @@ document.addEventListener("keydown", e => {
   if(/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || navLayer() !== $("gmenu")) return;
   const m = items.find(x => x.id === gmSel); if(m) openOverview(m);
 });
+
+/* ---------- Update Log (newest first; add new entries at the top of UPDATES) ---------- */
+const UPDATES = [
+  {v: "1.16", title: "Credits", items: [
+    "New Credits page in the profile menu, with KitNeko’s name and links to Twitter and YouTube."]},
+  {v: "1.15", title: "Common Questions", items: [
+    "New Common Questions page in the profile menu, answering whether KitFlix is piracy, whether streaming services will be supported, and why some sites show an embed error."]},
+  {v: "1.14", title: "Video wallpapers", items: [
+    "In Customize → Background you can now use an MP4 as your wallpaper, from a link or a file on your device.",
+    "Video wallpapers play on a loop and are always muted, and the Darken slider works on them too."]},
+  {v: "1.13", title: "Update Log", items: [
+    "New Update Log page in the profile menu, listing what’s new in KitFlix.",
+    "A “New” tag shows next to it whenever there’s an update you haven’t seen yet."]},
+  {v: "1.12", title: "Game Menu", items: [
+    "Games now live in their own Game Menu, opened from the profile menu, with a Nintendo Switch-style look: a row of square icons, empty slots, and round buttons for Home, Settings and Add Game.",
+    "Pick a game and it launches straight away, with no overview page. Use the ⋯ button, the O key or a right-click on an icon to edit or remove a game.",
+    "Game Menu Settings: switch between light and dark mode, change the icon size, start games in fullscreen, and pick a 12 or 24-hour clock.",
+    "Games no longer appear in the main library, search or collections."]},
+  {v: "1.11", title: "Android download", items: [
+    "New Download page in the profile menu with the Android app (.apk)."]},
+  {v: "1.10", title: "First-run setup and unlimited pre-reels", items: [
+    "The first time you open KitFlix, a setup walks you through creating your first profile and customizing the site, then takes you to Who’s watching.",
+    "Cinema pre-reels have no limit any more: add as many as you like to a movie."]},
+  {v: "1.9", title: "Sound effects", items: [
+    "Pick your own MP3s in Customize for clicks, pressing Play, pressing Back and logging in.",
+    "Includes a volume slider and an on/off switch."]},
+  {v: "1.8", title: "Customize", items: [
+    "Change the KitFlix name in the top bar.",
+    "Three themes: Netflix Red, Roku Purple and Midnight Blue.",
+    "Set a colour, image or GIF background, load your own font file, and add floating GIFs you can drag around.",
+    "Browsing music that plays while you browse and pauses for trailers and playback."]},
+  {v: "1.7", title: "Cinema pre-reels", items: [
+    "Movies can have pre-reels that play in order before the movie, from YouTube, any link or a file on your device.",
+    "A Skip button jumps to the next one."]},
+  {v: "1.6", title: "Profiles", items: [
+    "Every visit starts with Who’s watching? Profiles need only a name and a picture, with no email.",
+    "Pick a built-in profile picture or upload your own, and change it any time from Edit profile.",
+    "Manage profiles lets you edit or delete them, and Switch profile is in the profile menu."]},
+  {v: "1.5", title: "TV-style controls and any link", items: [
+    "Movies and shows accept any link: a video file, YouTube, or a page that hosts the video.",
+    "Move around with the arrow keys like a TV remote, and use TV mode for a bigger interface."]},
+  {v: "1.4", title: "Netflix-style look", items: [
+    "A new top bar, a big featured billboard, sideways-scrolling rows and hover cards.",
+    "My List, Collections and search got their own pages."]},
+  {v: "1.3", title: "Books, music and games", items: [
+    "Add books as PDFs and read them in KitFlix.",
+    "Add songs and albums as MP3s, with a music player that keeps playing while you browse.",
+    "Add games by link and pick the console they came from."]},
+  {v: "1.2", title: "YouTube, trailers and the player", items: [
+    "YouTube links work for movies, shows and trailers.",
+    "Trailers play quietly on a title’s overview after 5 seconds.",
+    "You can exit fullscreen and keep watching in a window."]},
+  {v: "1.1", title: "Overview pages, My List and Collections", items: [
+    "Click a title to see an overview with a logo, backdrop, description, video quality and length, then press Play for fullscreen.",
+    "Favourite titles to build My List, and group titles into collections."]},
+  {v: "1.0", title: "KitFlix launches", items: [
+    "A library for movies and shows, added from a video link or a file on your device, each with a thumbnail, name and description."]}
+];
+function refreshLogBadge(){
+  let seen = null; try{ seen = localStorage.getItem("kitflix_seen_update"); }catch(e){}
+  $("logNew").classList.toggle("hidden", seen === UPDATES[0].v);
+}
+$("logBtn").onclick = () => { $("acctMenu").classList.add("hidden"); go("updates"); };
+function updatesPage(){
+  try{ localStorage.setItem("kitflix_seen_update", UPDATES[0].v); }catch(e){}
+  $("logNew").classList.add("hidden");
+  return E("div", {class: "cu"}, E("h1", {}, "Update Log"), E("p", {class: "sub"}, "What’s new in KitFlix, newest first."),
+    UPDATES.map((u, i) => E("section", {},
+      E("h2", {}, u.title, E("span", {class: "pill", style: "margin-left:.6rem;font-weight:400"}, "v" + u.v), i === 0 ? E("span", {class: "newdot"}, "New") : ""),
+      u.date ? E("p", {class: "sub"}, u.date) : "",
+      E("ul", {class: "ullist"}, u.items.map(t => E("li", {}, t))))));
+}
+
+/* ---------- Common Questions ---------- */
+const FAQ = [
+  ["Is the app piracy?", "No. You supply your own content. I’m not responsible for what you do."],
+  ["Will you ever add support for watching movies from streaming services you own?", "No, this would be very hard to do."],
+  ["Why do some sites I add not show, and give an embed error?", "Some websites don’t allow iframes. I can’t control that."]
+];
+$("faqBtn").onclick = () => { $("acctMenu").classList.add("hidden"); go("faq"); };
+function faqPage(){
+  return E("div", {class: "cu"}, E("h1", {}, "Common Questions"), E("p", {class: "sub"}, "Quick answers to things people ask."),
+    FAQ.map(([q, a]) => E("section", {}, E("h2", {}, q), E("p", {style: "margin:.4rem 0 0"}, a))));
+}
+
+/* ---------- Credits ---------- */
+const CREDITS = {
+  name: "KitNeko",
+  pfp: "https://github.com/NekoCatTeam/KitFlix/blob/main/images/KitNeko%20PFP.jpg?raw=true",
+  links: [["Twitter", "https://x.com/@kitmewfirey"], ["YouTube", "https://youtube.com/@KitTheRemixHedgehog"]]
+};
+$("crBtn").onclick = () => { $("acctMenu").classList.add("hidden"); go("credits"); };
+function creditsPage(){
+  const img = E("img", {class: "crpfp", src: CREDITS.pfp, alt: CREDITS.name + "’s profile picture", referrerpolicy: "no-referrer"});
+  img.onerror = () => img.replaceWith(E("div", {class: "crpfp crfb", role: "img", "aria-label": CREDITS.name}, CREDITS.name.charAt(0)));
+  return E("div", {class: "cu"},
+    E("div", {class: "crhead"}, E("h1", {class: "crname"}, CREDITS.name), img),
+    E("div", {class: "crlinks"}, CREDITS.links.map(([label, url], i) => E("a", {class: "btn " + (i ? "ghost" : "red"), href: url, target: "_blank", rel: "noopener noreferrer"}, label))));
+}
 
 /* ---------- Download ---------- */
 const APK_URL = "https://raw.githubusercontent.com/NekoCatTeam/KitFlix/main/download/kitflix.apk";
